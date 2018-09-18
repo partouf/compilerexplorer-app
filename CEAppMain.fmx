@@ -1,0 +1,179 @@
+object frmCEAppMain: TfrmCEAppMain
+  Left = 0
+  Top = 0
+  Caption = 'CEApp'
+  ClientHeight = 567
+  ClientWidth = 384
+  FormFactor.Width = 1440
+  FormFactor.Height = 900
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 0
+  object TopToolBar: TToolBar
+    Anchors = []
+    Size.Width = 384.000000000000000000
+    Size.Height = 44.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object lblCurrentTitle: TLabel
+      Align = Contents
+      Size.Width = 384.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'toollabel'
+      TextSettings.HorzAlign = Center
+    end
+    object btnBack: TSpeedButton
+      Action = acPreviousTab
+      Align = MostLeft
+      Enabled = True
+      ImageIndex = -1
+      Size.Width = 65.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'backtoolbutton'
+    end
+    object btnNext: TSpeedButton
+      Action = acNextTab
+      Align = MostRight
+      Enabled = True
+      ImageIndex = -1
+      Position.X = 340.000000000000000000
+      Size.Width = 44.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'nexttoolbutton'
+    end
+  end
+  object pgMain: TTabControl
+    Align = Client
+    FullSize = True
+    Size.Width = 384.000000000000000000
+    Size.Height = 479.000000000000000000
+    Size.PlatformDefault = False
+    TabHeight = 49.000000000000000000
+    TabIndex = 0
+    TabOrder = 1
+    TabPosition = None
+    OnChange = pgMainChange
+    Sizes = (
+      384s
+      479s
+      384s
+      479s)
+    object tabLanguageSelection: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = True
+      Size.Width = 8.000000000000000000
+      Size.Height = 8.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Language selection'
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      object lstLanguages: TListBox
+        Align = Client
+        Size.Width = 384.000000000000000000
+        Size.Height = 479.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        DisableFocusEffect = True
+        DefaultItemStyles.ItemStyle = ''
+        DefaultItemStyles.GroupHeaderStyle = ''
+        DefaultItemStyles.GroupFooterStyle = ''
+        Viewport.Width = 380.000000000000000000
+        Viewport.Height = 475.000000000000000000
+      end
+    end
+    object tabCodeEditor: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 8.000000000000000000
+      Size.Height = 8.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Code editor'
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      object edCodeEditor: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        OnChange = edCodeEditorChange
+        Align = Client
+        ControlType = Platform
+        Size.Width = 384.000000000000000000
+        Size.Height = 479.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Viewport.Width = 380.000000000000000000
+        Viewport.Height = 475.000000000000000000
+      end
+    end
+  end
+  object BottomToolBar: TToolBar
+    Align = Bottom
+    Anchors = [akLeft]
+    Position.Y = 523.000000000000000000
+    Size.Width = 384.000000000000000000
+    Size.Height = 44.000000000000000000
+    Size.PlatformDefault = False
+    StyleLookup = 'bottomtoolbar'
+    TabOrder = 2
+    object indicatorCompilation: TCircle
+      Position.X = 8.000000000000000000
+      Position.Y = 9.000000000000000000
+      Size.Width = 25.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      OnClick = indicatorCompilationClick
+    end
+    object cbCompilerSelection: TComboBox
+      Anchors = [akLeft, akTop, akRight]
+      Position.X = 40.000000000000000000
+      Position.Y = 11.000000000000000000
+      Size.Width = 305.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Visible = False
+      OnChange = cbCompilerSelectionChange
+    end
+    object btnCompilerSettings: TSpeedButton
+      Action = acNextTab
+      Align = MostRight
+      Enabled = True
+      ImageIndex = -1
+      Position.X = 340.000000000000000000
+      Size.Width = 44.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'ellipseseditbutton'
+      Text = 'Settings'
+      Visible = False
+    end
+  end
+  object lstActions: TActionList
+    Left = 176
+    Top = 56
+    object acPreviousTab: TPreviousTabAction
+      Category = 'Tab'
+      TabControl = pgMain
+      ShortCut = 137
+    end
+    object acNextTab: TNextTabAction
+      Category = 'Tab'
+      TabControl = pgMain
+    end
+    object acCompile: TAction
+      Category = 'Tab'
+      Text = 'Compile'
+      OnExecute = acCompileExecute
+    end
+  end
+end

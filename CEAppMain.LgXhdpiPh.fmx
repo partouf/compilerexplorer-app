@@ -1,0 +1,62 @@
+inherited frmCEAppMain_LgXhdpiPh: TfrmCEAppMain_LgXhdpiPh
+  ClientHeight = 695
+  ClientWidth = 450
+  OnKeyUp = FormKeyUp
+  DesignerMasterStyle = 0
+  inherited TopToolBar: TToolBar
+    Size.Width = 450.000000000000000000
+    Size.Height = 48.000000000000000000
+    inherited lblCurrentTitle: TLabel
+      Size.Width = 450.000000000000000000
+      Size.Height = 48.000000000000000000
+    end
+    inherited btnBack: TSpeedButton
+      Visible = False
+    end
+    inherited btnNext: TSpeedButton
+      Position.X = 402.000000000000000000
+      Size.Width = 48.000000000000000000
+      Size.Height = 48.000000000000000000
+    end
+  end
+  inherited pgMain: TTabControl
+    Size.Width = 450.000000000000000000
+    Size.Height = 599.000000000000000000
+    Sizes = (
+      450s
+      599s
+      450s
+      599s)
+    inherited tabLanguageSelection: TTabItem
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited lstLanguages: TListBox
+        Size.Width = 450.000000000000000000
+        Size.Height = 599.000000000000000000
+        Viewport.Width = 450.000000000000000000
+        Viewport.Height = 599.000000000000000000
+      end
+    end
+    inherited tabCodeEditor: TTabItem
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited edCodeEditor: TMemo
+        Size.Width = 450.000000000000000000
+        Size.Height = 599.000000000000000000
+        Viewport.Width = 450.000000000000000000
+        Viewport.Height = 599.000000000000000000
+      end
+    end
+  end
+  inherited BottomToolBar: TToolBar
+    Position.Y = 647.000000000000000000
+    Size.Width = 450.000000000000000000
+    Size.Height = 48.000000000000000000
+    inherited cbCompilerSelection: TComboBox
+      Size.Height = 32.000000000000000000
+    end
+    inherited btnCompilerSettings: TSpeedButton
+      Size.Height = 48.000000000000000000
+    end
+  end
+end

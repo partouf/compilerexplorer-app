@@ -1,0 +1,54 @@
+inherited frmCEAppMain_iPhone4in: TfrmCEAppMain_iPhone4in
+  ClientHeight = 548
+  ClientWidth = 320
+  DesignerMasterStyle = 0
+  inherited TopToolBar: TToolBar
+    Size.Width = 320.000000000000000000
+    inherited lblCurrentTitle: TLabel
+      Size.Width = 320.000000000000000000
+    end
+    inherited btnNext: TSpeedButton
+      Position.X = 276.000000000000000000
+    end
+  end
+  inherited pgMain: TTabControl
+    Size.Width = 320.000000000000000000
+    Size.Height = 460.000000000000000000
+    Sizes = (
+      320s
+      460s
+      320s
+      460s)
+    inherited tabLanguageSelection: TTabItem
+      Size.Width = 11.000000000000000000
+      Size.Height = 11.000000000000000000
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited lstLanguages: TListBox
+        Size.Width = 320.000000000000000000
+        Size.Height = 460.000000000000000000
+        Viewport.Width = 320.000000000000000000
+        Viewport.Height = 460.000000000000000000
+      end
+    end
+    inherited tabCodeEditor: TTabItem
+      Size.Width = 11.000000000000000000
+      Size.Height = 11.000000000000000000
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited edCodeEditor: TMemo
+        Size.Width = 320.000000000000000000
+        Size.Height = 460.000000000000000000
+        Viewport.Width = 320.000000000000000000
+        Viewport.Height = 460.000000000000000000
+      end
+    end
+  end
+  inherited BottomToolBar: TToolBar
+    Position.Y = 504.000000000000000000
+    Size.Width = 320.000000000000000000
+    inherited cbCompilerSelection: TComboBox
+      Size.Height = 30.000000000000000000
+    end
+  end
+end
