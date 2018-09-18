@@ -65,15 +65,18 @@ uses
 
 procedure TfrmCEAppMain.acCompileExecute(Sender: TObject);
 begin
-  FCECompile.Compile(FSelectedLanguage.Id, FSelectedCompiler.CompilerId, edCodeEditor.Text,
-    procedure(CompileResult: TCECompileResult)
-    begin
-      FLatestCompileResult.Free;
-      FLatestCompileResult := CompileResult;
+  if Assigned(FSelectedLanguage) and Assigned(FSelectedCompiler) then
+  begin
+    FCECompile.Compile(FSelectedLanguage.Id, FSelectedCompiler.CompilerId, edCodeEditor.Text,
+      procedure(CompileResult: TCECompileResult)
+      begin
+        FLatestCompileResult.Free;
+        FLatestCompileResult := CompileResult;
 
-      HandleCompileResult;
-    end
-  );
+        HandleCompileResult;
+      end
+    );
+  end;
 end;
 
 procedure TfrmCEAppMain.cbCompilerSelectionChange(Sender: TObject);

@@ -104,12 +104,14 @@ object frmCEAppMain: TfrmCEAppMain
       object edCodeEditor: TMemo
         Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
         DataDetectorTypes = []
+        StyledSettings = [Size, Style, FontColor]
+        TextSettings.Font.Family = 'Courier New'
         OnChange = edCodeEditorChange
         Align = Client
-        ControlType = Platform
         Size.Width = 384.000000000000000000
         Size.Height = 479.000000000000000000
         Size.PlatformDefault = False
+        StyleLookup = 'memostyle'
         TabOrder = 0
         Viewport.Width = 380.000000000000000000
         Viewport.Height = 475.000000000000000000
