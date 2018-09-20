@@ -15,7 +15,6 @@ type
     acNextTab: TNextTabAction;
     TopToolBar: TToolBar;
     btnBack: TSpeedButton;
-    lblCurrentTitle: TLabel;
     btnNext: TSpeedButton;
     pgMain: TTabControl;
     tabLanguageSelection: TTabItem;
@@ -27,6 +26,9 @@ type
     acCompile: TAction;
     cbCompilerSelection: TComboBox;
     btnCompilerSettings: TSpeedButton;
+    acHeaderClick: TAction;
+    lblCurrentTitle: TSpeedButton;
+    btnKeyboard: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
     procedure pgMainChange(Sender: TObject);
@@ -34,6 +36,8 @@ type
     procedure acCompileExecute(Sender: TObject);
     procedure edCodeEditorChange(Sender: TObject);
     procedure cbCompilerSelectionChange(Sender: TObject);
+    procedure acHeaderClickExecute(Sender: TObject);
+    procedure btnKeyboardClick(Sender: TObject);
   private
     { Private declarations }
     FCELanguages: ICELanguages;
@@ -47,6 +51,8 @@ type
     procedure InitializeLanguageTab;
     procedure InitializeCodeEditor;
     procedure HandleCompileResult;
+    procedure UpdateLanguageList;
+    procedure UpdateCompilerList;
   public
     { Public declarations }
   end;
@@ -57,7 +63,8 @@ var
 implementation
 
 uses
-  CE.Languages, System.Generics.Collections, CE.Compilers, CE.Compile;
+  CE.Languages, System.Generics.Collections, CE.Compilers, CE.Compile,
+  FMX.VirtualKeyboard, FMX.Platform;
 
 {$R *.fmx}
 {$R *.LgXhdpiPh.fmx ANDROID}
@@ -76,6 +83,17 @@ begin
         HandleCompileResult;
       end
     );
+  end;
+end;
+
+procedure TfrmCEAppMain.acHeaderClickExecute(Sender: TObject);
+var
+  Service: IFMXVirtualKeyboardService;
+begin
+  TPlatformServices.Current.SupportsPlatformService(IFMXVirtualKeyboardService, IInterface(Service));
+  if Assigned(Service) then
+  begin
+    Service.HideVirtualKeyboard;
   end;
 end;
 
@@ -120,21 +138,67 @@ end;
 
 procedure TfrmCEAppMain.HandleCompileResult;
 begin
-  if Assigned(FLatestCompileResult) then
-  begin
-    if FLatestCompileResult.Successful then
+  TThread.Synchronize(nil,
+    procedure
     begin
-      indicatorCompilation.Fill.Color := TAlphaColorRec.Green;
-    end
-    else
+      if Assigned(FLatestCompileResult) then
+      begin
+        if FLatestCompileResult.Successful then
+        begin
+          indicatorCompilation.Fill.Color := TAlphaColorRec.Green;
+        end
+        else
+        begin
+          indicatorCompilation.Fill.Color := TAlphaColorRec.Red;
+        end;
+      end
+      else
+      begin
+        indicatorCompilation.Fill.Color := TAlphaColorRec.Lightgray;
+      end;
+    end);
+end;
+
+procedure TfrmCEAppMain.UpdateLanguageList;
+begin
+  TThread.Synchronize(nil,
+    procedure
+    var
+      Lang: TCELanguage;
     begin
-      indicatorCompilation.Fill.Color := TAlphaColorRec.Red;
-    end;
-  end
-  else
-  begin
-    indicatorCompilation.Fill.Color := TAlphaColorRec.Lightgray;
-  end;
+      lstLanguages.BeginUpdate;
+      try
+        lstLanguages.Clear;
+        for Lang in FLoadedLanguages do
+        begin
+          lstLanguages.Items.AddObject(Lang.LanguageName, Lang);
+        end;
+      finally
+        lstLanguages.EndUpdate;
+      end;
+    end);
+end;
+
+procedure TfrmCEAppMain.UpdateCompilerList;
+begin
+  TThread.Synchronize(nil,
+    procedure
+    var
+      Compiler: TCECompiler;
+    begin
+      cbCompilerSelection.BeginUpdate;
+      try
+        cbCompilerSelection.Clear;
+        cbCompilerSelection.Visible := True;
+        for Compiler in FLoadedCompilers do
+        begin
+          cbCompilerSelection.Items.AddObject(Compiler.Description, Compiler);
+        end;
+        cbCompilerSelection.ItemIndex := cbCompilerSelection.Items.IndexOfObject(FLoadedCompilers.First);
+      finally
+        cbCompilerSelection.EndUpdate;
+      end;
+    end);
 end;
 
 procedure TfrmCEAppMain.indicatorCompilationClick(Sender: TObject);
@@ -151,11 +215,24 @@ begin
 
   if pgMain.ActiveTab = tabLanguageSelection then
   begin
+    btnBack.Visible := False;
     InitializeLanguageTab;
   end
   else if pgMain.ActiveTab = tabCodeEditor then
   begin
+    btnBack.Visible := True;
     InitializeCodeEditor;
+  end;
+end;
+
+procedure TfrmCEAppMain.btnKeyboardClick(Sender: TObject);
+var
+  Service: IFMXVirtualKeyboardService;
+begin
+  TPlatformServices.Current.SupportsPlatformService(IFMXVirtualKeyboardService, IInterface(Service));
+  if Assigned(Service) then
+  begin
+    Service.ShowVirtualKeyboard(edCodeEditor);
   end;
 end;
 
@@ -165,17 +242,11 @@ begin
   begin
     FCELanguages.GetLanguages(
       procedure(Languages: TCELanguages)
-      var
-        Lang: TCELanguage;
       begin
-        lstLanguages.Clear;
-        for Lang in Languages do
-        begin
-          lstLanguages.Items.AddObject(Lang.LanguageName, Lang);
-        end;
-
         FLoadedLanguages.Free;
         FLoadedLanguages := Languages;
+
+        UpdateLanguageList;
       end);
   end;
 end;
@@ -195,20 +266,11 @@ begin
 
       FCECompilers.GetCompilers(FSelectedLanguage.Id,
         procedure(Compilers: TCECompilers)
-        var
-          Compiler: TCECompiler;
         begin
           FLoadedCompilers.Free;
           FLoadedCompilers := Compilers;
 
-          cbCompilerSelection.Clear;
-          cbCompilerSelection.Visible := True;
-          for Compiler in FLoadedCompilers do
-          begin
-            cbCompilerSelection.Items.AddObject(Compiler.Description, Compiler);
-          end;
-
-          cbCompilerSelection.ItemIndex := cbCompilerSelection.Items.IndexOfObject(FLoadedCompilers.First);
+          UpdateCompilerList;
         end);
     end;
   end;

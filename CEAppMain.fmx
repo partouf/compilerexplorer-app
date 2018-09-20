@@ -15,20 +15,12 @@ object frmCEAppMain: TfrmCEAppMain
     Size.Height = 44.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
-    object lblCurrentTitle: TLabel
-      Align = Contents
-      Size.Width = 384.000000000000000000
-      Size.Height = 44.000000000000000000
-      Size.PlatformDefault = False
-      StyleLookup = 'toollabel'
-      TextSettings.HorzAlign = Center
-    end
     object btnBack: TSpeedButton
       Action = acPreviousTab
       Align = MostLeft
       Enabled = True
       ImageIndex = -1
-      Size.Width = 65.000000000000000000
+      Size.Width = 44.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'backtoolbutton'
@@ -43,6 +35,15 @@ object frmCEAppMain: TfrmCEAppMain
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'nexttoolbutton'
+    end
+    object lblCurrentTitle: TSpeedButton
+      Action = acHeaderClick
+      Align = Client
+      Enabled = True
+      ImageIndex = -1
+      Size.Width = 296.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
     end
   end
   object pgMain: TTabControl
@@ -108,6 +109,7 @@ object frmCEAppMain: TfrmCEAppMain
         TextSettings.Font.Family = 'Courier New'
         OnChange = edCodeEditorChange
         Align = Client
+        ControlType = Platform
         Size.Width = 384.000000000000000000
         Size.Height = 479.000000000000000000
         Size.PlatformDefault = False
@@ -128,36 +130,39 @@ object frmCEAppMain: TfrmCEAppMain
     StyleLookup = 'bottomtoolbar'
     TabOrder = 2
     object indicatorCompilation: TCircle
-      Position.X = 8.000000000000000000
-      Position.Y = 9.000000000000000000
+      Align = MostLeft
+      Margins.Left = 10.000000000000000000
+      Margins.Right = 10.000000000000000000
+      Position.X = 10.000000000000000000
       Size.Width = 25.000000000000000000
-      Size.Height = 26.000000000000000000
+      Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
       OnClick = indicatorCompilationClick
     end
     object cbCompilerSelection: TComboBox
-      Anchors = [akLeft, akTop, akRight]
-      Position.X = 40.000000000000000000
-      Position.Y = 11.000000000000000000
-      Size.Width = 305.000000000000000000
-      Size.Height = 22.000000000000000000
+      Align = Client
+      Size.Width = 251.000000000000000000
+      Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
-      Visible = False
       OnChange = cbCompilerSelectionChange
     end
     object btnCompilerSettings: TSpeedButton
-      Action = acNextTab
-      Align = MostRight
-      Enabled = True
-      ImageIndex = -1
-      Position.X = 340.000000000000000000
+      Align = Right
+      Position.X = 296.000000000000000000
       Size.Width = 44.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'ellipseseditbutton'
-      Text = 'Settings'
-      Visible = False
+    end
+    object btnKeyboard: TSpeedButton
+      Align = MostRight
+      Position.X = 340.000000000000000000
+      Size.Width = 44.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'composetoolbutton'
+      OnClick = btnKeyboardClick
     end
   end
   object lstActions: TActionList
@@ -176,6 +181,10 @@ object frmCEAppMain: TfrmCEAppMain
       Category = 'Tab'
       Text = 'Compile'
       OnExecute = acCompileExecute
+    end
+    object acHeaderClick: TAction
+      Category = 'Tab'
+      OnExecute = acHeaderClickExecute
     end
   end
 end

@@ -6,16 +6,16 @@ inherited frmCEAppMain_LgXhdpiPh: TfrmCEAppMain_LgXhdpiPh
   inherited TopToolBar: TToolBar
     Size.Width = 450.000000000000000000
     Size.Height = 48.000000000000000000
-    inherited lblCurrentTitle: TLabel
-      Size.Width = 450.000000000000000000
-      Size.Height = 48.000000000000000000
-    end
     inherited btnBack: TSpeedButton
       Visible = False
     end
     inherited btnNext: TSpeedButton
       Position.X = 402.000000000000000000
       Size.Width = 48.000000000000000000
+      Size.Height = 48.000000000000000000
+    end
+    inherited lblCurrentTitle: TSpeedButton
+      Size.Width = 402.000000000000000000
       Size.Height = 48.000000000000000000
     end
   end
@@ -52,10 +52,21 @@ inherited frmCEAppMain_LgXhdpiPh: TfrmCEAppMain_LgXhdpiPh
     Position.Y = 647.000000000000000000
     Size.Width = 450.000000000000000000
     Size.Height = 48.000000000000000000
+    inherited indicatorCompilation: TCircle
+      Padding.Left = 50.000000000000000000
+      Size.Height = 48.000000000000000000
+    end
     inherited cbCompilerSelection: TComboBox
+      Size.Width = 313.000000000000000000
       Size.Height = 32.000000000000000000
     end
     inherited btnCompilerSettings: TSpeedButton
+      Position.X = 358.000000000000000000
+      Size.Height = 48.000000000000000000
+    end
+    inherited btnKeyboard: TSpeedButton
+      Position.X = 402.000000000000000000
+      Size.Width = 48.000000000000000000
       Size.Height = 48.000000000000000000
     end
   end

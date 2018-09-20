@@ -4,11 +4,11 @@ inherited frmCEAppMain_iPhone4in: TfrmCEAppMain_iPhone4in
   DesignerMasterStyle = 0
   inherited TopToolBar: TToolBar
     Size.Width = 320.000000000000000000
-    inherited lblCurrentTitle: TLabel
-      Size.Width = 320.000000000000000000
-    end
     inherited btnNext: TSpeedButton
       Position.X = 276.000000000000000000
+    end
+    inherited lblCurrentTitle: TSpeedButton
+      Size.Width = 232.000000000000000000
     end
   end
   inherited pgMain: TTabControl
@@ -47,8 +47,18 @@ inherited frmCEAppMain_iPhone4in: TfrmCEAppMain_iPhone4in
   inherited BottomToolBar: TToolBar
     Position.Y = 504.000000000000000000
     Size.Width = 320.000000000000000000
+    inherited indicatorCompilation: TCircle
+      Padding.Left = 50.000000000000000000
+    end
     inherited cbCompilerSelection: TComboBox
+      Size.Width = 187.000000000000000000
       Size.Height = 30.000000000000000000
+    end
+    inherited btnCompilerSettings: TSpeedButton
+      Position.X = 232.000000000000000000
+    end
+    inherited btnKeyboard: TSpeedButton
+      Position.X = 276.000000000000000000
     end
   end
 end
