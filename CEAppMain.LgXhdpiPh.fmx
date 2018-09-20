@@ -22,25 +22,46 @@ inherited frmCEAppMain_LgXhdpiPh: TfrmCEAppMain_LgXhdpiPh
   inherited pgMain: TTabControl
     Size.Width = 450.000000000000000000
     Size.Height = 599.000000000000000000
+    TabIndex = 2
     Sizes = (
       450s
       599s
       450s
+      599s
+      450s
       599s)
-    inherited tabLanguageSelection: TTabItem
+    inherited tabCodeEditor: TTabItem [0]
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
-      inherited lstLanguages: TListBox
+      inherited edCodeEditor: TMemo
         Size.Width = 450.000000000000000000
         Size.Height = 599.000000000000000000
         Viewport.Width = 450.000000000000000000
         Viewport.Height = 599.000000000000000000
       end
     end
-    inherited tabCodeEditor: TTabItem
+    inherited tabCompilerOutput: TTabItem [1]
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
-      inherited edCodeEditor: TMemo
+      inherited splitOutput: TSplitter
+        Size.Width = 450.000000000000000000
+      end
+      inherited lstAssembly: TListBox
+        Size.Width = 450.000000000000000000
+        Size.Height = 486.000000000000000000
+        Viewport.Width = 450.000000000000000000
+        Viewport.Height = 486.000000000000000000
+      end
+      inherited lstCompilerOutput: TListBox
+        Size.Width = 450.000000000000000000
+        Viewport.Width = 450.000000000000000000
+        Viewport.Height = 105.000000000000000000
+      end
+    end
+    inherited tabLanguageSelection: TTabItem [2]
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited lstLanguages: TListBox
         Size.Width = 450.000000000000000000
         Size.Height = 599.000000000000000000
         Viewport.Width = 450.000000000000000000
@@ -57,11 +78,12 @@ inherited frmCEAppMain_LgXhdpiPh: TfrmCEAppMain_LgXhdpiPh
       Size.Height = 48.000000000000000000
     end
     inherited cbCompilerSelection: TComboBox
-      Size.Width = 313.000000000000000000
+      Size.Width = 309.000000000000000000
       Size.Height = 32.000000000000000000
     end
     inherited btnCompilerSettings: TSpeedButton
-      Position.X = 358.000000000000000000
+      Position.X = 354.000000000000000000
+      Size.Width = 48.000000000000000000
       Size.Height = 48.000000000000000000
     end
     inherited btnKeyboard: TSpeedButton

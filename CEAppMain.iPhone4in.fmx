@@ -8,35 +8,54 @@ inherited frmCEAppMain_iPhone4in: TfrmCEAppMain_iPhone4in
       Position.X = 276.000000000000000000
     end
     inherited lblCurrentTitle: TSpeedButton
-      Size.Width = 232.000000000000000000
+      Size.Width = 219.000000000000000000
     end
   end
   inherited pgMain: TTabControl
     Size.Width = 320.000000000000000000
     Size.Height = 460.000000000000000000
+    TabIndex = 2
     Sizes = (
       320s
       460s
       320s
+      460s
+      320s
       460s)
-    inherited tabLanguageSelection: TTabItem
+    inherited tabCodeEditor: TTabItem [0]
       Size.Width = 11.000000000000000000
       Size.Height = 11.000000000000000000
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
-      inherited lstLanguages: TListBox
+      inherited edCodeEditor: TMemo
         Size.Width = 320.000000000000000000
         Size.Height = 460.000000000000000000
         Viewport.Width = 320.000000000000000000
         Viewport.Height = 460.000000000000000000
       end
     end
-    inherited tabCodeEditor: TTabItem
-      Size.Width = 11.000000000000000000
-      Size.Height = 11.000000000000000000
+    inherited tabCompilerOutput: TTabItem [1]
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
-      inherited edCodeEditor: TMemo
+      inherited splitOutput: TSplitter
+        Size.Width = 320.000000000000000000
+      end
+      inherited lstAssembly: TListBox
+        Size.Width = 320.000000000000000000
+        Size.Height = 347.000000000000000000
+        Viewport.Width = 320.000000000000000000
+        Viewport.Height = 347.000000000000000000
+      end
+      inherited lstCompilerOutput: TListBox
+        Size.Width = 320.000000000000000000
+        Viewport.Width = 320.000000000000000000
+        Viewport.Height = 105.000000000000000000
+      end
+    end
+    inherited tabLanguageSelection: TTabItem [2]
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited lstLanguages: TListBox
         Size.Width = 320.000000000000000000
         Size.Height = 460.000000000000000000
         Viewport.Width = 320.000000000000000000

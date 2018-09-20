@@ -20,7 +20,7 @@ object frmCEAppMain: TfrmCEAppMain
       Align = MostLeft
       Enabled = True
       ImageIndex = -1
-      Size.Width = 44.000000000000000000
+      Size.Width = 57.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'backtoolbutton'
@@ -41,7 +41,7 @@ object frmCEAppMain: TfrmCEAppMain
       Align = Client
       Enabled = True
       ImageIndex = -1
-      Size.Width = 296.000000000000000000
+      Size.Width = 283.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
     end
@@ -58,6 +58,8 @@ object frmCEAppMain: TfrmCEAppMain
     TabPosition = None
     OnChange = pgMainChange
     Sizes = (
+      384s
+      479s
       384s
       479s
       384s
@@ -119,6 +121,53 @@ object frmCEAppMain: TfrmCEAppMain
         Viewport.Height = 475.000000000000000000
       end
     end
+    object tabCompilerOutput: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 8.000000000000000000
+      Size.Height = 8.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Output'
+      object splitOutput: TSplitter
+        Align = Top
+        Cursor = crVSplit
+        MinSize = 20.000000000000000000
+        Position.Y = 105.000000000000000000
+        Size.Width = 384.000000000000000000
+        Size.Height = 8.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object lstAssembly: TListBox
+        Align = Client
+        Size.Width = 384.000000000000000000
+        Size.Height = 366.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        DisableFocusEffect = True
+        DefaultItemStyles.ItemStyle = ''
+        DefaultItemStyles.GroupHeaderStyle = ''
+        DefaultItemStyles.GroupFooterStyle = ''
+        Viewport.Width = 380.000000000000000000
+        Viewport.Height = 362.000000000000000000
+      end
+      object lstCompilerOutput: TListBox
+        Align = Top
+        Size.Width = 384.000000000000000000
+        Size.Height = 105.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        DisableFocusEffect = True
+        DefaultItemStyles.ItemStyle = ''
+        DefaultItemStyles.GroupHeaderStyle = ''
+        DefaultItemStyles.GroupFooterStyle = ''
+        Viewport.Width = 380.000000000000000000
+        Viewport.Height = 101.000000000000000000
+      end
+    end
   end
   object BottomToolBar: TToolBar
     Align = Bottom
@@ -141,19 +190,24 @@ object frmCEAppMain: TfrmCEAppMain
     end
     object cbCompilerSelection: TComboBox
       Align = Client
+      Margins.Top = 10.000000000000000000
+      Margins.Bottom = 10.000000000000000000
       Size.Width = 251.000000000000000000
-      Size.Height = 44.000000000000000000
+      Size.Height = 24.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       OnChange = cbCompilerSelectionChange
     end
     object btnCompilerSettings: TSpeedButton
+      Action = acToggleCompilerArguments
       Align = Right
+      Enabled = True
+      ImageIndex = -1
       Position.X = 296.000000000000000000
       Size.Width = 44.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
-      StyleLookup = 'ellipseseditbutton'
+      StyleLookup = 'infotoolbutton'
     end
     object btnKeyboard: TSpeedButton
       Align = MostRight
@@ -166,8 +220,8 @@ object frmCEAppMain: TfrmCEAppMain
     end
   end
   object lstActions: TActionList
-    Left = 176
-    Top = 56
+    Left = 240
+    Top = 24
     object acPreviousTab: TPreviousTabAction
       Category = 'Tab'
       TabControl = pgMain
@@ -185,6 +239,10 @@ object frmCEAppMain: TfrmCEAppMain
     object acHeaderClick: TAction
       Category = 'Tab'
       OnExecute = acHeaderClickExecute
+    end
+    object acToggleCompilerArguments: TAction
+      Category = 'Tab'
+      OnExecute = acToggleCompilerArgumentsExecute
     end
   end
 end

@@ -6,7 +6,8 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Graphics, FMX.Forms, FMX.Dialogs, FMX.TabControl, System.Actions, FMX.ActnList,
   FMX.Objects, FMX.StdCtrls, FMX.ScrollBox, FMX.Memo, FMX.Controls.Presentation,
-  FMX.Layouts, FMX.ListBox, CE.Interfaces, CE.Types;
+  FMX.Layouts, FMX.ListBox, CE.Interfaces, CE.Types, FMX.ListView.Types,
+  FMX.ListView.Appearances, FMX.ListView.Adapters.Base, FMX.ListView, FMX.Edit;
 
 type
   TfrmCEAppMain = class(TForm)
@@ -29,6 +30,11 @@ type
     acHeaderClick: TAction;
     lblCurrentTitle: TSpeedButton;
     btnKeyboard: TSpeedButton;
+    tabCompilerOutput: TTabItem;
+    splitOutput: TSplitter;
+    lstAssembly: TListBox;
+    lstCompilerOutput: TListBox;
+    acToggleCompilerArguments: TAction;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
     procedure pgMainChange(Sender: TObject);
@@ -38,6 +44,7 @@ type
     procedure cbCompilerSelectionChange(Sender: TObject);
     procedure acHeaderClickExecute(Sender: TObject);
     procedure btnKeyboardClick(Sender: TObject);
+    procedure acToggleCompilerArgumentsExecute(Sender: TObject);
   private
     { Private declarations }
     FCELanguages: ICELanguages;
@@ -48,11 +55,13 @@ type
     FCECompile: ICECompile;
     FSelectedCompiler: TCECompiler;
     FLatestCompileResult: TCECompileResult;
+    FCurrentCompilerArguments: string;
     procedure InitializeLanguageTab;
     procedure InitializeCodeEditor;
     procedure HandleCompileResult;
     procedure UpdateLanguageList;
     procedure UpdateCompilerList;
+    procedure InitializeCompilerOutput;
   public
     { Public declarations }
   end;
@@ -64,7 +73,7 @@ implementation
 
 uses
   CE.Languages, System.Generics.Collections, CE.Compilers, CE.Compile,
-  FMX.VirtualKeyboard, FMX.Platform;
+  FMX.VirtualKeyboard, FMX.Platform, FMX.DialogService;
 
 {$R *.fmx}
 {$R *.LgXhdpiPh.fmx ANDROID}
@@ -74,7 +83,7 @@ procedure TfrmCEAppMain.acCompileExecute(Sender: TObject);
 begin
   if Assigned(FSelectedLanguage) and Assigned(FSelectedCompiler) then
   begin
-    FCECompile.Compile(FSelectedLanguage.Id, FSelectedCompiler.CompilerId, edCodeEditor.Text,
+    FCECompile.Compile(FSelectedLanguage.Id, FSelectedCompiler.CompilerId, edCodeEditor.Text, FCurrentCompilerArguments,
       procedure(CompileResult: TCECompileResult)
       begin
         FLatestCompileResult.Free;
@@ -90,14 +99,33 @@ procedure TfrmCEAppMain.acHeaderClickExecute(Sender: TObject);
 var
   Service: IFMXVirtualKeyboardService;
 begin
-  FreeAndNil(FLatestCompileResult);
-  HandleCompileResult;
-
-  TPlatformServices.Current.SupportsPlatformService(IFMXVirtualKeyboardService, IInterface(Service));
-  if Assigned(Service) then
+  if pgMain.ActiveTab = tabCodeEditor then
   begin
-    Service.HideVirtualKeyboard;
+    FreeAndNil(FLatestCompileResult);
+    HandleCompileResult;
+
+    TPlatformServices.Current.SupportsPlatformService(IFMXVirtualKeyboardService, IInterface(Service));
+    if Assigned(Service) then
+    begin
+      Service.HideVirtualKeyboard;
+    end;
   end;
+end;
+
+procedure TfrmCEAppMain.acToggleCompilerArgumentsExecute(Sender: TObject);
+begin
+  TDialogService.InputQuery('Compiler arguments', [''], [FCurrentCompilerArguments],
+    procedure(const AResult: TModalResult; const AValues: array of string)
+    begin
+      if FCurrentCompilerArguments <> AValues[0] then
+      begin
+        FCurrentCompilerArguments := AValues[0];
+
+        FreeAndNil(FLatestCompileResult);
+        HandleCompileResult;
+      end;
+    end
+  );
 end;
 
 procedure TfrmCEAppMain.cbCompilerSelectionChange(Sender: TObject);
@@ -159,6 +187,11 @@ begin
       begin
         indicatorCompilation.Fill.Color := TAlphaColorRec.Lightgray;
       end;
+
+      if pgMain.ActiveTab = tabCompilerOutput then
+      begin
+        InitializeCompilerOutput;
+      end;
     end);
 end;
 
@@ -204,6 +237,40 @@ begin
     end);
 end;
 
+procedure TfrmCEAppMain.InitializeCompilerOutput;
+var
+  AsmLine: TCEAssemblyLine;
+  ErrorLine: TCEErrorLine;
+begin
+  lstCompilerOutput.BeginUpdate;
+  try
+    lstCompilerOutput.Clear;
+    if Assigned(FLatestCompileResult) then
+    begin
+      for ErrorLine in FLatestCompileResult.CompilerOutput do
+      begin
+        lstCompilerOutput.Items.AddObject(ErrorLine.Text, ErrorLine);
+      end;
+    end;
+  finally
+    lstCompilerOutput.EndUpdate;
+  end;
+
+  lstAssembly.BeginUpdate;
+  try
+    lstAssembly.Clear;
+    if Assigned(FLatestCompileResult) then
+    begin
+      for AsmLine in FLatestCompileResult.Assembly do
+      begin
+        lstAssembly.Items.AddObject(AsmLine.Text, AsmLine);
+      end;
+    end;
+  finally
+    lstAssembly.EndUpdate;
+  end;
+end;
+
 procedure TfrmCEAppMain.indicatorCompilationClick(Sender: TObject);
 begin
   acCompile.Execute;
@@ -216,6 +283,8 @@ begin
   else
     lblCurrentTitle.Text := '';
 
+  btnKeyboard.Visible := False;
+
   if pgMain.ActiveTab = tabLanguageSelection then
   begin
     btnBack.Visible := False;
@@ -225,7 +294,13 @@ begin
   begin
     btnBack.Visible := True;
     InitializeCodeEditor;
+    btnKeyboard.Visible := True;
+  end
+  else if pgMain.ActiveTab = tabCompilerOutput then
+  begin
+    InitializeCompilerOutput;
   end;
+
 end;
 
 procedure TfrmCEAppMain.btnKeyboardClick(Sender: TObject);
