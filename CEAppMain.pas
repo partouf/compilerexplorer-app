@@ -90,6 +90,9 @@ procedure TfrmCEAppMain.acHeaderClickExecute(Sender: TObject);
 var
   Service: IFMXVirtualKeyboardService;
 begin
+  FreeAndNil(FLatestCompileResult);
+  HandleCompileResult;
+
   TPlatformServices.Current.SupportsPlatformService(IFMXVirtualKeyboardService, IInterface(Service));
   if Assigned(Service) then
   begin
