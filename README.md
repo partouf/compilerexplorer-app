@@ -1,6 +1,9 @@
 # compilerexplorer-app
 An App for Compiler Explorer #unofficial
 
+This project uses the [compilerexplorer-api](https://github.com/partouf/compilerexplorer-api) for Delphi
+
+
 ## Screenshots
 
 ### Language selection
