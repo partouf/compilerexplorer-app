@@ -1,0 +1,79 @@
+inherited frmCEAppMain_iPhone55in: TfrmCEAppMain_iPhone55in
+  ClientHeight = 716
+  ClientWidth = 414
+  DesignerMasterStyle = 3
+  inherited TopToolBar: TToolBar
+    Size.Width = 414.000000000000000000
+    inherited btnNext: TSpeedButton
+      Position.X = 370.000000000000000000
+    end
+    inherited lblCurrentTitle: TSpeedButton
+      Size.Width = 278.000000000000000000
+    end
+    inherited btnSave: TSpeedButton
+      Position.X = 326.000000000000000000
+    end
+  end
+  inherited pgMain: TTabControl
+    Size.Width = 414.000000000000000000
+    Size.Height = 628.000000000000000000
+    Sizes = (
+      414s
+      628s
+      414s
+      628s
+      414s
+      628s)
+    inherited tabLanguageSelection: TTabItem
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited lstLanguages: TListBox
+        Size.Width = 414.000000000000000000
+        Size.Height = 628.000000000000000000
+        Viewport.Width = 414.000000000000000000
+        Viewport.Height = 628.000000000000000000
+      end
+    end
+    inherited tabCodeEditor: TTabItem
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited edCodeEditor: TMemo
+        Size.Width = 414.000000000000000000
+        Size.Height = 628.000000000000000000
+        Viewport.Width = 414.000000000000000000
+        Viewport.Height = 628.000000000000000000
+      end
+    end
+    inherited tabCompilerOutput: TTabItem
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited lstCompilerOutput: TMemo
+        Size.Width = 414.000000000000000000
+        Viewport.Width = 414.000000000000000000
+        Viewport.Height = 113.000000000000000000
+      end
+      inherited splitOutput: TSplitter
+        Size.Width = 414.000000000000000000
+      end
+      inherited lstAssembly: TMemo
+        Size.Width = 414.000000000000000000
+        Size.Height = 507.000000000000000000
+        Viewport.Width = 414.000000000000000000
+        Viewport.Height = 507.000000000000000000
+      end
+    end
+  end
+  inherited BottomToolBar: TToolBar
+    Position.Y = 672.000000000000000000
+    Size.Width = 414.000000000000000000
+    inherited cbCompilerSelection: TComboBox
+      Size.Width = 281.000000000000000000
+    end
+    inherited btnCompilerSettings: TSpeedButton
+      Position.X = 326.000000000000000000
+    end
+    inherited btnKeyboard: TSpeedButton
+      Position.X = 370.000000000000000000
+    end
+  end
+end

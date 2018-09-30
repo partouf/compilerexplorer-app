@@ -1,24 +1,22 @@
 inherited frmCEAppMain_iPhone4in: TfrmCEAppMain_iPhone4in
   ClientHeight = 548
   ClientWidth = 320
-  DesignerMasterStyle = 0
+  DesignerMasterStyle = 2
   inherited TopToolBar: TToolBar
     Size.Width = 320.000000000000000000
     inherited btnNext: TSpeedButton
       Position.X = 276.000000000000000000
     end
     inherited lblCurrentTitle: TSpeedButton
-      Size.Width = 175.000000000000000000
+      Size.Width = 184.000000000000000000
     end
     inherited btnSave: TSpeedButton
       Position.X = 232.000000000000000000
-      Size.Width = 44.000000000000000000
     end
   end
   inherited pgMain: TTabControl
     Size.Width = 320.000000000000000000
     Size.Height = 460.000000000000000000
-    TabIndex = 2
     Sizes = (
       320s
       460s
@@ -27,21 +25,16 @@ inherited frmCEAppMain_iPhone4in: TfrmCEAppMain_iPhone4in
       320s
       460s)
     inherited tabLanguageSelection: TTabItem
-      IsSelected = False
-      Size.Width = 11.000000000000000000
-      Size.Height = 11.000000000000000000
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
       inherited lstLanguages: TListBox
         Size.Width = 320.000000000000000000
         Size.Height = 460.000000000000000000
         Viewport.Width = 320.000000000000000000
-        Viewport.Height = 438.000000000000000000
+        Viewport.Height = 460.000000000000000000
       end
     end
     inherited tabCodeEditor: TTabItem
-      Size.Width = 11.000000000000000000
-      Size.Height = 11.000000000000000000
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
       inherited edCodeEditor: TMemo
@@ -52,36 +45,29 @@ inherited frmCEAppMain_iPhone4in: TfrmCEAppMain_iPhone4in
       end
     end
     inherited tabCompilerOutput: TTabItem
-      IsSelected = True
-      Size.Width = 11.000000000000000000
-      Size.Height = 11.000000000000000000
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
+      inherited lstCompilerOutput: TMemo
+        Size.Width = 320.000000000000000000
+        Viewport.Width = 320.000000000000000000
+        Viewport.Height = 113.000000000000000000
+      end
       inherited splitOutput: TSplitter
         Size.Width = 320.000000000000000000
       end
-      inherited lstAssembly: TListBox
+      inherited lstAssembly: TMemo
         Size.Width = 320.000000000000000000
-        Size.Height = 347.000000000000000000
+        Size.Height = 339.000000000000000000
         Viewport.Width = 320.000000000000000000
-        Viewport.Height = 347.000000000000000000
-      end
-      inherited lstCompilerOutput: TListBox
-        Size.Width = 320.000000000000000000
-        Viewport.Width = 320.000000000000000000
-        Viewport.Height = 105.000000000000000000
+        Viewport.Height = 339.000000000000000000
       end
     end
   end
   inherited BottomToolBar: TToolBar
     Position.Y = 504.000000000000000000
     Size.Width = 320.000000000000000000
-    inherited indicatorCompilation: TCircle
-      Padding.Left = 50.000000000000000000
-    end
     inherited cbCompilerSelection: TComboBox
       Size.Width = 187.000000000000000000
-      Size.Height = 30.000000000000000000
     end
     inherited btnCompilerSettings: TSpeedButton
       Position.X = 232.000000000000000000

@@ -8,7 +8,7 @@ object frmCEAppMain: TfrmCEAppMain
   FormFactor.Height = 900
   FormFactor.Devices = [Desktop]
   OnCreate = FormCreate
-  DesignerMasterStyle = 0
+  DesignerMasterStyle = 2
   object TopToolBar: TToolBar
     Anchors = []
     Size.Width = 384.000000000000000000
@@ -20,7 +20,7 @@ object frmCEAppMain: TfrmCEAppMain
       Align = MostLeft
       Enabled = True
       ImageIndex = -1
-      Size.Width = 57.000000000000000000
+      Size.Width = 48.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'backtoolbutton'
@@ -41,7 +41,7 @@ object frmCEAppMain: TfrmCEAppMain
       Align = Client
       Enabled = True
       ImageIndex = -1
-      Size.Width = 231.000000000000000000
+      Size.Width = 248.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
     end
@@ -50,8 +50,8 @@ object frmCEAppMain: TfrmCEAppMain
       Align = Right
       Enabled = True
       ImageIndex = -1
-      Position.X = 288.000000000000000000
-      Size.Width = 52.000000000000000000
+      Position.X = 296.000000000000000000
+      Size.Width = 44.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'bookmarkstoolbutton'
@@ -80,8 +80,8 @@ object frmCEAppMain: TfrmCEAppMain
         item
         end>
       IsSelected = True
-      Size.Width = 8.000000000000000000
-      Size.Height = 8.000000000000000000
+      Size.Width = 11.000000000000000000
+      Size.Height = 11.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
@@ -98,8 +98,8 @@ object frmCEAppMain: TfrmCEAppMain
         DefaultItemStyles.ItemStyle = ''
         DefaultItemStyles.GroupHeaderStyle = ''
         DefaultItemStyles.GroupFooterStyle = ''
-        Viewport.Width = 380.000000000000000000
-        Viewport.Height = 475.000000000000000000
+        Viewport.Width = 384.000000000000000000
+        Viewport.Height = 479.000000000000000000
       end
       object btnLoadFromLink: TSpeedButton
         Action = acLoadFromLink
@@ -108,7 +108,7 @@ object frmCEAppMain: TfrmCEAppMain
         ImageIndex = -1
         Position.Y = 457.000000000000000000
         Size.Width = 384.000000000000000000
-        Size.Height = 22.000000000000000000
+        Size.Height = 44.000000000000000000
         Size.PlatformDefault = False
         Visible = False
       end
@@ -118,8 +118,8 @@ object frmCEAppMain: TfrmCEAppMain
         item
         end>
       IsSelected = False
-      Size.Width = 8.000000000000000000
-      Size.Height = 8.000000000000000000
+      Size.Width = 11.000000000000000000
+      Size.Height = 11.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
@@ -133,13 +133,14 @@ object frmCEAppMain: TfrmCEAppMain
         TextSettings.Font.Family = 'Courier New'
         OnChange = edCodeEditorChange
         Align = Client
+        ControlType = Platform
         Size.Width = 384.000000000000000000
         Size.Height = 479.000000000000000000
         Size.PlatformDefault = False
         StyleLookup = 'memostyle'
         TabOrder = 0
-        Viewport.Width = 380.000000000000000000
-        Viewport.Height = 475.000000000000000000
+        Viewport.Width = 376.000000000000000000
+        Viewport.Height = 471.000000000000000000
       end
     end
     object tabCompilerOutput: TTabItem
@@ -147,48 +148,54 @@ object frmCEAppMain: TfrmCEAppMain
         item
         end>
       IsSelected = False
-      Size.Width = 8.000000000000000000
-      Size.Height = 8.000000000000000000
+      Size.Width = 11.000000000000000000
+      Size.Height = 11.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
       Text = 'Output'
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
+      object lstCompilerOutput: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        ReadOnly = True
+        StyledSettings = [Size, Style, FontColor]
+        TextSettings.Font.Family = 'Courier New'
+        Align = Top
+        ControlType = Platform
+        Size.Width = 384.000000000000000000
+        Size.Height = 113.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = 'memostyle'
+        TabOrder = 0
+        Viewport.Width = 376.000000000000000000
+        Viewport.Height = 105.000000000000000000
+      end
       object splitOutput: TSplitter
         Align = Top
         Cursor = crVSplit
         MinSize = 20.000000000000000000
-        Position.Y = 105.000000000000000000
+        Position.Y = 113.000000000000000000
         Size.Width = 384.000000000000000000
         Size.Height = 8.000000000000000000
         Size.PlatformDefault = False
       end
-      object lstAssembly: TListBox
+      object lstAssembly: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        ReadOnly = True
+        StyledSettings = [Size, Style, FontColor]
+        TextSettings.Font.Family = 'Courier New'
         Align = Client
+        ControlType = Platform
         Size.Width = 384.000000000000000000
-        Size.Height = 366.000000000000000000
+        Size.Height = 358.000000000000000000
         Size.PlatformDefault = False
+        StyleLookup = 'memostyle'
         TabOrder = 1
-        DisableFocusEffect = True
-        DefaultItemStyles.ItemStyle = ''
-        DefaultItemStyles.GroupHeaderStyle = ''
-        DefaultItemStyles.GroupFooterStyle = ''
-        Viewport.Width = 380.000000000000000000
-        Viewport.Height = 362.000000000000000000
-      end
-      object lstCompilerOutput: TListBox
-        Align = Top
-        Size.Width = 384.000000000000000000
-        Size.Height = 105.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 2
-        DisableFocusEffect = True
-        DefaultItemStyles.ItemStyle = ''
-        DefaultItemStyles.GroupHeaderStyle = ''
-        DefaultItemStyles.GroupFooterStyle = ''
-        Viewport.Width = 380.000000000000000000
-        Viewport.Height = 101.000000000000000000
+        Viewport.Width = 376.000000000000000000
+        Viewport.Height = 350.000000000000000000
       end
     end
   end
@@ -216,7 +223,7 @@ object frmCEAppMain: TfrmCEAppMain
       Margins.Top = 10.000000000000000000
       Margins.Bottom = 10.000000000000000000
       Size.Width = 251.000000000000000000
-      Size.Height = 24.000000000000000000
+      Size.Height = 30.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       OnChange = cbCompilerSelectionChange

@@ -32,8 +32,8 @@ type
     btnKeyboard: TSpeedButton;
     tabCompilerOutput: TTabItem;
     splitOutput: TSplitter;
-    lstAssembly: TListBox;
-    lstCompilerOutput: TListBox;
+    lstAssembly: TMemo;
+    lstCompilerOutput: TMemo;
     acToggleCompilerArguments: TAction;
     acSave: TAction;
     btnSave: TSpeedButton;
@@ -93,6 +93,7 @@ uses
 
 {$R *.fmx}
 {$R *.LgXhdpiPh.fmx ANDROID}
+{$R *.iPhone55in.fmx IOS}
 {$R *.iPhone4in.fmx IOS}
 
 procedure TfrmCEAppMain.acCompileExecute(Sender: TObject);
@@ -354,12 +355,12 @@ var
 begin
   lstCompilerOutput.BeginUpdate;
   try
-    lstCompilerOutput.Clear;
+    lstCompilerOutput.Lines.Clear;
     if Assigned(FLatestCompileResult) then
     begin
       for ErrorLine in FLatestCompileResult.CompilerOutput do
       begin
-        lstCompilerOutput.Items.AddObject(ErrorLine.Text, ErrorLine);
+        lstCompilerOutput.Lines.AddObject(ErrorLine.Text, ErrorLine);
       end;
     end;
   finally
@@ -368,12 +369,12 @@ begin
 
   lstAssembly.BeginUpdate;
   try
-    lstAssembly.Clear;
+    lstAssembly.Lines.Clear;
     if Assigned(FLatestCompileResult) then
     begin
       for AsmLine in FLatestCompileResult.Assembly do
       begin
-        lstAssembly.Items.AddObject(AsmLine.Text, AsmLine);
+        lstAssembly.Lines.AddObject(AsmLine.Text, AsmLine);
       end;
     end;
   finally
