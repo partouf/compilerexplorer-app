@@ -8,7 +8,11 @@ inherited frmCEAppMain_iPhone4in: TfrmCEAppMain_iPhone4in
       Position.X = 276.000000000000000000
     end
     inherited lblCurrentTitle: TSpeedButton
-      Size.Width = 219.000000000000000000
+      Size.Width = 175.000000000000000000
+    end
+    inherited btnSave: TSpeedButton
+      Position.X = 232.000000000000000000
+      Size.Width = 44.000000000000000000
     end
   end
   inherited pgMain: TTabControl
@@ -22,7 +26,20 @@ inherited frmCEAppMain_iPhone4in: TfrmCEAppMain_iPhone4in
       460s
       320s
       460s)
-    inherited tabCodeEditor: TTabItem [0]
+    inherited tabLanguageSelection: TTabItem
+      IsSelected = False
+      Size.Width = 11.000000000000000000
+      Size.Height = 11.000000000000000000
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited lstLanguages: TListBox
+        Size.Width = 320.000000000000000000
+        Size.Height = 460.000000000000000000
+        Viewport.Width = 320.000000000000000000
+        Viewport.Height = 438.000000000000000000
+      end
+    end
+    inherited tabCodeEditor: TTabItem
       Size.Width = 11.000000000000000000
       Size.Height = 11.000000000000000000
       ExplicitSize.cx = 8.000000000000000000
@@ -34,7 +51,10 @@ inherited frmCEAppMain_iPhone4in: TfrmCEAppMain_iPhone4in
         Viewport.Height = 460.000000000000000000
       end
     end
-    inherited tabCompilerOutput: TTabItem [1]
+    inherited tabCompilerOutput: TTabItem
+      IsSelected = True
+      Size.Width = 11.000000000000000000
+      Size.Height = 11.000000000000000000
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
       inherited splitOutput: TSplitter
@@ -50,16 +70,6 @@ inherited frmCEAppMain_iPhone4in: TfrmCEAppMain_iPhone4in
         Size.Width = 320.000000000000000000
         Viewport.Width = 320.000000000000000000
         Viewport.Height = 105.000000000000000000
-      end
-    end
-    inherited tabLanguageSelection: TTabItem [2]
-      ExplicitSize.cx = 8.000000000000000000
-      ExplicitSize.cy = 8.000000000000000000
-      inherited lstLanguages: TListBox
-        Size.Width = 320.000000000000000000
-        Size.Height = 460.000000000000000000
-        Viewport.Width = 320.000000000000000000
-        Viewport.Height = 460.000000000000000000
       end
     end
   end

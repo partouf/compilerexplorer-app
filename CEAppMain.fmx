@@ -41,9 +41,20 @@ object frmCEAppMain: TfrmCEAppMain
       Align = Client
       Enabled = True
       ImageIndex = -1
-      Size.Width = 283.000000000000000000
+      Size.Width = 231.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
+    end
+    object btnSave: TSpeedButton
+      Action = acSave
+      Align = Right
+      Enabled = True
+      ImageIndex = -1
+      Position.X = 288.000000000000000000
+      Size.Width = 52.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'bookmarkstoolbutton'
     end
   end
   object pgMain: TTabControl
@@ -90,6 +101,17 @@ object frmCEAppMain: TfrmCEAppMain
         Viewport.Width = 380.000000000000000000
         Viewport.Height = 475.000000000000000000
       end
+      object btnLoadFromLink: TSpeedButton
+        Action = acLoadFromLink
+        Align = Bottom
+        Enabled = True
+        ImageIndex = -1
+        Position.Y = 457.000000000000000000
+        Size.Width = 384.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        Visible = False
+      end
     end
     object tabCodeEditor: TTabItem
       CustomIcon = <
@@ -131,6 +153,8 @@ object frmCEAppMain: TfrmCEAppMain
       StyleLookup = ''
       TabOrder = 0
       Text = 'Output'
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
       object splitOutput: TSplitter
         Align = Top
         Cursor = crVSplit
@@ -242,6 +266,16 @@ object frmCEAppMain: TfrmCEAppMain
     object acToggleCompilerArguments: TAction
       Category = 'Tab'
       OnExecute = acToggleCompilerArgumentsExecute
+    end
+    object acSave: TAction
+      Category = 'Tab'
+      Text = 'acSave'
+      OnExecute = acSaveExecute
+    end
+    object acLoadFromLink: TAction
+      Category = 'Tab'
+      Text = 'Load from link'
+      OnExecute = acLoadFromLinkExecute
     end
   end
 end

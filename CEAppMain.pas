@@ -35,6 +35,10 @@ type
     lstAssembly: TListBox;
     lstCompilerOutput: TListBox;
     acToggleCompilerArguments: TAction;
+    acSave: TAction;
+    btnSave: TSpeedButton;
+    acLoadFromLink: TAction;
+    btnLoadFromLink: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
     procedure pgMainChange(Sender: TObject);
@@ -45,23 +49,33 @@ type
     procedure acHeaderClickExecute(Sender: TObject);
     procedure btnKeyboardClick(Sender: TObject);
     procedure acToggleCompilerArgumentsExecute(Sender: TObject);
+    procedure acSaveExecute(Sender: TObject);
+    procedure acLoadFromLinkExecute(Sender: TObject);
   private
     { Private declarations }
     FCELanguages: ICELanguages;
-    FSelectedLanguage: TCELanguage;
     FCECompilers: ICECompilers;
+    FCECompile: ICECompile;
+    FCELinkInfo: ICELinkInfo;
+    FSelectedLanguage: TCELanguage;
     FLoadedLanguages: TCELanguages;
     FLoadedCompilers: TCECompilers;
-    FCECompile: ICECompile;
     FSelectedCompiler: TCECompiler;
     FLatestCompileResult: TCECompileResult;
     FCurrentCompilerArguments: string;
+    FHasLoadedCompilers: Boolean;
+    FOnCompilersLoaded: TProc;
     procedure InitializeLanguageTab;
     procedure InitializeCodeEditor;
     procedure HandleCompileResult;
     procedure UpdateLanguageList;
     procedure UpdateCompilerList;
     procedure InitializeCompilerOutput;
+    procedure SelectLanguage(const Id: string);
+    procedure TypeCode(const Code: string);
+    procedure SelectCompiler(const Id: string);
+    procedure SetCompilerOptions(const Options: string);
+    procedure GoToTab(const Tab: TTabItem);
   public
     { Public declarations }
   end;
@@ -73,7 +87,9 @@ implementation
 
 uses
   CE.Languages, System.Generics.Collections, CE.Compilers, CE.Compile,
-  FMX.VirtualKeyboard, FMX.Platform, FMX.DialogService;
+  FMX.VirtualKeyboard, FMX.Platform, FMX.DialogService,
+  System.IOUtils, System.DateUtils, System.StrUtils, CE.LinkInfo,
+  CE.ClientState;
 
 {$R *.fmx}
 {$R *.LgXhdpiPh.fmx ANDROID}
@@ -110,6 +126,89 @@ begin
       Service.HideVirtualKeyboard;
     end;
   end;
+end;
+
+procedure TfrmCEAppMain.SelectLanguage(const Id: string);
+var
+  Language: TCELanguage;
+begin
+  if Assigned(FLoadedLanguages) and (FLoadedLanguages.Count <> 0) then
+  begin
+    Language := FLoadedLanguages.GetById(Id);
+    lstLanguages.ItemIndex := lstLanguages.Items.IndexOfObject(Language);
+
+    GoToTab(tabCodeEditor);
+  end;
+end;
+
+procedure TfrmCEAppMain.TypeCode(const Code: string);
+begin
+  edCodeEditor.Text := Code;
+end;
+
+procedure TfrmCEAppMain.SelectCompiler(const Id: string);
+var
+  Compiler: TCECompiler;
+begin
+  while not FHasLoadedCompilers do
+  begin
+    Sleep(100);
+  end;
+
+  if Assigned(FLoadedCompilers) and (FLoadedCompilers.Count <> 0) then
+  begin
+    Compiler := FLoadedCompilers.FindById(Id);
+    cbCompilerSelection.ItemIndex := cbCompilerSelection.Items.IndexOfObject(Compiler);
+  end;
+end;
+
+procedure TfrmCEAppMain.SetCompilerOptions(const Options: string);
+begin
+  FCurrentCompilerArguments := Options;
+end;
+
+procedure TfrmCEAppMain.acLoadFromLinkExecute(Sender: TObject);
+var
+  Link: string;
+begin
+  Link := 'http://192.168.4.139:10240/z/3MbByS';
+
+  FCELinkInfo.GetClientState(Link,
+    procedure(State: TCEClientState)
+    var
+      Session: TCEClientStateSession;
+      Compiler: TCEClientStateCompiler;
+    begin
+      TThread.Synchronize(nil,
+        procedure
+        begin
+          Session := State.Sessions.First;
+          FOnCompilersLoaded :=
+            procedure
+            begin
+              TypeCode(Session.Source);
+
+              Compiler := Session.Compilers.First;
+              SelectCompiler(Compiler.Id);
+
+              SetCompilerOptions(Compiler.Options);
+              acCompile.Execute;
+            end;
+          SelectLanguage(Session.Language);
+        end);
+    end);
+end;
+
+procedure TfrmCEAppMain.acSaveExecute(Sender: TObject);
+var
+  SavePath: string;
+  Filename: string;
+begin
+  SavePath := TPath.Combine(TPath.GetDocumentsPath, 'CEApp');
+  ForceDirectories(SavePath);
+
+  Filename := TPath.Combine(SavePath, FormatDateTime('yyyymmddhhnnss', Now) + '.txt');
+  edCodeEditor.Lines.SaveToFile(Filename);
 end;
 
 procedure TfrmCEAppMain.acToggleCompilerArgumentsExecute(Sender: TObject);
@@ -153,6 +252,7 @@ begin
   FCELanguages := TCELanguagesFromRest.Create;
   FCECompilers := TCECompilersFromRest.Create;
   FCECompile := TCECompileViaRest.Create;
+  FCELinkInfo := TCELinkInfo.Create;
 
   pgMain.First(TTabTransition.None);
   pgMainChange(nil);
@@ -169,6 +269,12 @@ begin
     pgMain.First;
     Key := 0;
   end;
+end;
+
+procedure TfrmCEAppMain.GoToTab(const Tab: TTabItem);
+begin
+  pgMain.ActiveTab := Tab;
+  pgMainChange(pgMain);
 end;
 
 procedure TfrmCEAppMain.HandleCompileResult;
@@ -288,6 +394,8 @@ begin
     lblCurrentTitle.Text := '';
 
   btnKeyboard.Visible := False;
+  btnSave.Visible := False;
+  BottomToolbar.Visible := pgMain.ActiveTab <> tabLanguageSelection;
 
   if pgMain.ActiveTab = tabLanguageSelection then
   begin
@@ -342,6 +450,7 @@ begin
     NewLanguage := (lstLanguages.Selected.Data as TCELanguage);
     if FSelectedLanguage <> NewLanguage then
     begin
+      FHasLoadedCompilers := False;
       edCodeEditor.Text := '';
       FSelectedLanguage := NewLanguage;
       cbCompilerSelection.Visible := False;
@@ -353,6 +462,13 @@ begin
           FLoadedCompilers := Compilers;
 
           UpdateCompilerList;
+
+          FHasLoadedCompilers := True;
+          if Assigned(FOnCompilersLoaded) then
+          begin
+            FOnCompilersLoaded();
+            FOnCompilersLoaded := nil;
+          end;
         end);
     end;
   end;
