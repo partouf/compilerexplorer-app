@@ -156,6 +156,10 @@ begin
 
   pgMain.First(TTabTransition.None);
   pgMainChange(nil);
+
+{$IFDEF ANDROID}
+  edCodeEditor.Font.Family := 'monospace';
+{$ENDIF}
 end;
 
 procedure TfrmCEAppMain.FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);

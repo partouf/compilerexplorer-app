@@ -111,7 +111,6 @@ object frmCEAppMain: TfrmCEAppMain
         TextSettings.Font.Family = 'Courier New'
         OnChange = edCodeEditorChange
         Align = Client
-        ControlType = Platform
         Size.Width = 384.000000000000000000
         Size.Height = 479.000000000000000000
         Size.PlatformDefault = False
