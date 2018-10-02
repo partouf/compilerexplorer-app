@@ -1,5 +1,5 @@
 # compilerexplorer-app
-An App for Compiler Explorer #unofficial
+An App for [Compiler Explorer](https://github.com/mattgodbolt/compiler-explorer) #unofficial
 
 This project uses the [compilerexplorer-api](https://github.com/partouf/compilerexplorer-api) for Delphi
 
