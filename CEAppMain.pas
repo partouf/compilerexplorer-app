@@ -54,6 +54,7 @@ type
     procedure btnKeyboardClick(Sender: TObject);
     procedure acToggleCompilerArgumentsExecute(Sender: TObject);
     procedure acSaveExecute(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
     FCELanguages: ICELanguages;
@@ -294,6 +295,13 @@ begin
 {$ENDIF}
 
   RegisterIntent;
+end;
+
+procedure TfrmCEAppMain.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(FLoadedLanguages);
+  FreeAndNil(FLoadedCompilers);
+  FreeAndNil(FLatestCompileResult);
 end;
 
 procedure TfrmCEAppMain.FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);

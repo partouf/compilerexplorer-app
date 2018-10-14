@@ -8,6 +8,7 @@ object frmCEAppMain: TfrmCEAppMain
   FormFactor.Height = 900
   FormFactor.Devices = [Desktop]
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   DesignerMasterStyle = 2
   object TopToolBar: TToolBar
     Anchors = []
