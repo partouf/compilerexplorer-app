@@ -106,7 +106,7 @@ object frmCEAppMain: TfrmCEAppMain
         Align = Bottom
         Enabled = True
         ImageIndex = -1
-        Position.Y = 457.000000000000000000
+        Position.Y = 435.000000000000000000
         Size.Width = 384.000000000000000000
         Size.Height = 44.000000000000000000
         Size.PlatformDefault = False
@@ -282,7 +282,6 @@ object frmCEAppMain: TfrmCEAppMain
     object acLoadFromLink: TAction
       Category = 'Tab'
       Text = 'Load from link'
-      OnExecute = acLoadFromLinkExecute
     end
   end
 end

@@ -44,6 +44,9 @@ inherited frmCEAppMain_LgXhdpiPh: TfrmCEAppMain_LgXhdpiPh
         Viewport.Width = 450.000000000000000000
         Viewport.Height = 599.000000000000000000
       end
+      inherited btnLoadFromLink: TSpeedButton
+        Size.Height = 48.000000000000000000
+      end
     end
     inherited tabCodeEditor: TTabItem
       Size.Width = 8.000000000000000000

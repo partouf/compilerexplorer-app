@@ -7,7 +7,11 @@ uses
   FMX.Types, FMX.Controls, FMX.Graphics, FMX.Forms, FMX.Dialogs, FMX.TabControl, System.Actions, FMX.ActnList,
   FMX.Objects, FMX.StdCtrls, FMX.ScrollBox, FMX.Memo, FMX.Controls.Presentation,
   FMX.Layouts, FMX.ListBox, CE.Interfaces, CE.Types, FMX.ListView.Types,
-  FMX.ListView.Appearances, FMX.ListView.Adapters.Base, FMX.ListView, FMX.Edit;
+  FMX.ListView.Appearances, FMX.ListView.Adapters.Base, FMX.ListView, FMX.Edit,
+  {$ifdef ANDROID}
+  Androidapi.JNI.GraphicsContentViewText, Androidapi.JNI.JavaTypes,
+  {$endif}
+  FMX.Platform, System.Messaging, CE.ClientState;
 
 type
   TfrmCEAppMain = class(TForm)
@@ -50,7 +54,6 @@ type
     procedure btnKeyboardClick(Sender: TObject);
     procedure acToggleCompilerArgumentsExecute(Sender: TObject);
     procedure acSaveExecute(Sender: TObject);
-    procedure acLoadFromLinkExecute(Sender: TObject);
   private
     { Private declarations }
     FCELanguages: ICELanguages;
@@ -65,6 +68,7 @@ type
     FCurrentCompilerArguments: string;
     FHasLoadedCompilers: Boolean;
     FOnCompilersLoaded: TProc;
+    procedure RegisterIntent;
     procedure InitializeLanguageTab;
     procedure InitializeCodeEditor;
     procedure HandleCompileResult;
@@ -76,6 +80,12 @@ type
     procedure SelectCompiler(const Id: string);
     procedure SetCompilerOptions(const Options: string);
     procedure GoToTab(const Tab: TTabItem);
+    procedure HandleActivityMessage(const Sender: TObject; const M: TMessage);
+    function HandleAppEvent(AAppEvent: TApplicationEvent;
+      AContext: TObject): Boolean;
+    function HandleIntentAction(const Data: JIntent): Boolean;
+    procedure LoadState(const State: TCEClientState);
+    procedure LoadStateFromLink(const Link: string);
   public
     { Public declarations }
   end;
@@ -86,10 +96,13 @@ var
 implementation
 
 uses
+{$ifdef ANDROID}
+  FMX.Platform.Android, Androidapi.JNI.Net, Androidapi.JNI.Os, Androidapi.Helpers,
+{$endif}
   CE.Languages, System.Generics.Collections, CE.Compilers, CE.Compile,
-  FMX.VirtualKeyboard, FMX.Platform, FMX.DialogService,
+  FMX.VirtualKeyboard, FMX.DialogService,
   System.IOUtils, System.DateUtils, System.StrUtils, CE.LinkInfo,
-  CE.ClientState;
+  CE.LinkSaver;
 
 {$R *.fmx}
 {$R *.LgXhdpiPh.fmx ANDROID}
@@ -168,48 +181,66 @@ begin
   FCurrentCompilerArguments := Options;
 end;
 
-procedure TfrmCEAppMain.acLoadFromLinkExecute(Sender: TObject);
+procedure TfrmCEAppMain.LoadState(const State: TCEClientState);
 var
-  Link: string;
+  Session: TCEClientStateSession;
+  Compiler: TCEClientStateCompiler;
 begin
-  Link := 'http://192.168.4.139:10240/z/3MbByS';
-
-  FCELinkInfo.GetClientState(Link,
-    procedure(State: TCEClientState)
-    var
-      Session: TCEClientStateSession;
-      Compiler: TCEClientStateCompiler;
+  TThread.Synchronize(nil,
+    procedure
     begin
-      TThread.Synchronize(nil,
+      Session := State.Sessions.First;
+      FOnCompilersLoaded :=
         procedure
         begin
-          Session := State.Sessions.First;
-          FOnCompilersLoaded :=
-            procedure
-            begin
-              TypeCode(Session.Source);
+          TypeCode(Session.Source);
 
-              Compiler := Session.Compilers.First;
-              SelectCompiler(Compiler.Id);
+          Compiler := Session.Compilers.First;
+          SelectCompiler(Compiler.Id);
 
-              SetCompilerOptions(Compiler.Options);
-              acCompile.Execute;
-            end;
-          SelectLanguage(Session.Language);
-        end);
+          SetCompilerOptions(Compiler.Options);
+          acCompile.Execute;
+        end;
+      SelectLanguage(Session.Language);
+    end);
+end;
+
+procedure TfrmCEAppMain.LoadStateFromLink(const Link: string);
+begin
+  FCELinkInfo.GetClientState(Link,
+    procedure(State: TCEClientState)
+    begin
+      LoadState(State);
     end);
 end;
 
 procedure TfrmCEAppMain.acSaveExecute(Sender: TObject);
 var
-  SavePath: string;
-  Filename: string;
+  Saver: TCELinkSaver;
+  Svc: IFMXClipboardService;
 begin
-  SavePath := TPath.Combine(TPath.GetDocumentsPath, 'CEApp');
-  ForceDirectories(SavePath);
+//  SavePath := TPath.Combine(TPath.GetDocumentsPath, 'CEApp');
+//  ForceDirectories(SavePath);
+//
+//  Filename := TPath.Combine(SavePath, FormatDateTime('yyyymmddhhnnss', Now) + '.txt');
+//  edCodeEditor.Lines.SaveToFile(Filename);
 
-  Filename := TPath.Combine(SavePath, FormatDateTime('yyyymmddhhnnss', Now) + '.txt');
-  edCodeEditor.Lines.SaveToFile(Filename);
+  Saver := TCELinkSaver.Create;
+  Saver.Save(
+    FSelectedLanguage.Id,
+    FSelectedCompiler.CompilerId,
+    edCodeEditor.Lines.Text,
+    FCurrentCompilerArguments,
+    procedure(LinkId: string)
+    begin
+      TThread.Synchronize(nil,
+        procedure
+        begin
+          if TPlatformServices.Current.SupportsPlatformService(IFMXClipboardService, Svc) then
+            Svc.SetClipboard('https://godbolt.org/z/' + LinkId);
+        end);
+    end
+  );
 end;
 
 procedure TfrmCEAppMain.acToggleCompilerArgumentsExecute(Sender: TObject);
@@ -261,6 +292,8 @@ begin
 {$IFDEF ANDROID}
   edCodeEditor.Font.Family := 'monospace';
 {$ENDIF}
+
+  RegisterIntent;
 end;
 
 procedure TfrmCEAppMain.FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
@@ -406,6 +439,7 @@ begin
   else if pgMain.ActiveTab = tabCodeEditor then
   begin
     btnBack.Visible := True;
+    btnSave.Visible := True;
     InitializeCodeEditor;
     btnKeyboard.Visible := True;
   end
@@ -414,6 +448,53 @@ begin
     InitializeCompilerOutput;
   end;
 
+end;
+
+procedure TfrmCEAppMain.RegisterIntent;
+var
+  AppEventService: IFMXApplicationEventService;
+begin
+  if TPlatformServices.Current.SupportsPlatformService(IFMXApplicationEventService, AppEventService) then
+    AppEventService.SetApplicationEventHandler(HandleAppEvent);
+
+  // Register the type of intent action that we want to be able to receive.
+  // Note: A corresponding <action> tag must also exist in the <intent-filter> section of AndroidManifest.template.xml.
+  {$ifdef ANDROID}
+  MainActivity.registerIntentAction(TJIntent.JavaClass.ACTION_VIEW);
+  TMessageManager.DefaultManager.SubscribeToMessage(TMessageReceivedNotification, HandleActivityMessage);
+  {$endif}
+end;
+
+procedure TfrmCEAppMain.HandleActivityMessage(const Sender: TObject; const M: TMessage);
+begin
+  if M is TMessageReceivedNotification then
+    HandleIntentAction(TMessageReceivedNotification(M).Value);
+end;
+
+function TfrmCEAppMain.HandleAppEvent(AAppEvent: TApplicationEvent; AContext: TObject): Boolean;
+var
+  StartupIntent: JIntent;
+begin
+  Result := False;
+  if AAppEvent = TApplicationEvent.BecameActive then
+  begin
+    StartupIntent := MainActivity.getIntent;
+    if StartupIntent <> nil then
+      HandleIntentAction(StartupIntent);
+  end;
+end;
+
+function TfrmCEAppMain.HandleIntentAction(const Data: JIntent): Boolean;
+var
+  Extras: JBundle;
+begin
+  Result := False;
+  if Data <> nil then
+  begin
+    Result := True;
+
+    LoadStateFromLink(JStringToString(Data.getDataString));
+  end;
 end;
 
 procedure TfrmCEAppMain.btnKeyboardClick(Sender: TObject);

@@ -11,7 +11,8 @@ uses
   CE.Types in '..\compilerexplorer-api\CE\CE.Types.pas',
   CE.Compile in '..\compilerexplorer-api\CE\CE.Compile.pas',
   CE.LinkInfo in '..\compilerexplorer-api\CE\CE.LinkInfo.pas',
-  CE.ClientState in '..\compilerexplorer-api\CE\CE.ClientState.pas';
+  CE.ClientState in '..\compilerexplorer-api\CE\CE.ClientState.pas',
+  CE.LinkSaver in '..\compilerexplorer-api\CE\CE.LinkSaver.pas';
 
 {$R *.res}
 
