@@ -83,7 +83,9 @@ type
     procedure HandleActivityMessage(const Sender: TObject; const M: TMessage);
     function HandleAppEvent(AAppEvent: TApplicationEvent;
       AContext: TObject): Boolean;
-    function HandleIntentAction(const Data: JIntent): Boolean;
+    {$ifdef ANDROID}
+    function HandleAnroidIntentAction(const Data: JIntent): Boolean;
+    {$endif}
     procedure LoadState(const State: TCEClientState);
     procedure LoadStateFromLink(const Link: string);
   public
@@ -461,41 +463,56 @@ begin
   // Note: A corresponding <action> tag must also exist in the <intent-filter> section of AndroidManifest.template.xml.
   {$ifdef ANDROID}
   MainActivity.registerIntentAction(TJIntent.JavaClass.ACTION_VIEW);
+  {$endif}
+
+  {$ifdef ANDROID or IOS}
   TMessageManager.DefaultManager.SubscribeToMessage(TMessageReceivedNotification, HandleActivityMessage);
   {$endif}
 end;
 
 procedure TfrmCEAppMain.HandleActivityMessage(const Sender: TObject; const M: TMessage);
 begin
+  {$ifdef ANDROID or IOS}
   if M is TMessageReceivedNotification then
-    HandleIntentAction(TMessageReceivedNotification(M).Value);
+    HandleAnroidIntentAction(TMessageReceivedNotification(M).Value);
+  {$endif}
 end;
 
 function TfrmCEAppMain.HandleAppEvent(AAppEvent: TApplicationEvent; AContext: TObject): Boolean;
+{$ifdef ANDROID}
 var
   StartupIntent: JIntent;
+{$endif}
 begin
   Result := False;
   if AAppEvent = TApplicationEvent.BecameActive then
   begin
+    {$ifdef ANDROID}
     StartupIntent := MainActivity.getIntent;
     if StartupIntent <> nil then
-      HandleIntentAction(StartupIntent);
+      HandleAnroidIntentAction(StartupIntent);
+    {$endif}
   end;
 end;
 
-function TfrmCEAppMain.HandleIntentAction(const Data: JIntent): Boolean;
+{$ifdef ANDROID}
+function TfrmCEAppMain.HandleAnroidIntentAction(const Data: JIntent): Boolean;
 var
-  Extras: JBundle;
+  Link: string;
 begin
   Result := False;
   if Data <> nil then
   begin
-    Result := True;
+    Link := JStringToString(Data.getDataString);
+    if ContainsText(Link, '/z/') then
+    begin
+      Result := True;
 
-    LoadStateFromLink(JStringToString(Data.getDataString));
+      LoadStateFromLink(Link);
+    end;
   end;
 end;
+{$endif}
 
 procedure TfrmCEAppMain.btnKeyboardClick(Sender: TObject);
 var
