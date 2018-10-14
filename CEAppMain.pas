@@ -221,12 +221,6 @@ var
   Saver: TCELinkSaver;
   Svc: IFMXClipboardService;
 begin
-//  SavePath := TPath.Combine(TPath.GetDocumentsPath, 'CEApp');
-//  ForceDirectories(SavePath);
-//
-//  Filename := TPath.Combine(SavePath, FormatDateTime('yyyymmddhhnnss', Now) + '.txt');
-//  edCodeEditor.Lines.SaveToFile(Filename);
-
   Saver := TCELinkSaver.Create;
   Saver.Save(
     FSelectedLanguage.Id,
@@ -239,7 +233,11 @@ begin
         procedure
         begin
           if TPlatformServices.Current.SupportsPlatformService(IFMXClipboardService, Svc) then
+          begin
             Svc.SetClipboard('https://godbolt.org/z/' + LinkId);
+
+            TDialogService.ShowMessage('Link copied to clipboard');
+          end;
         end);
     end
   );
