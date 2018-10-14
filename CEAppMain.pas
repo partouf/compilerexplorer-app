@@ -457,8 +457,6 @@ begin
   if TPlatformServices.Current.SupportsPlatformService(IFMXApplicationEventService, AppEventService) then
     AppEventService.SetApplicationEventHandler(HandleAppEvent);
 
-  // Register the type of intent action that we want to be able to receive.
-  // Note: A corresponding <action> tag must also exist in the <intent-filter> section of AndroidManifest.template.xml.
   {$ifdef ANDROID}
   MainActivity.registerIntentAction(TJIntent.JavaClass.ACTION_VIEW);
   {$endif}
