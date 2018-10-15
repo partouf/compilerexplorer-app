@@ -11,6 +11,9 @@ uses
   {$ifdef ANDROID}
   Androidapi.JNI.GraphicsContentViewText, Androidapi.JNI.JavaTypes,
   {$endif}
+  {$ifdef IOS}
+  FMX.Platform.IOS,
+  {$endif}
   FMX.Platform, System.Messaging, CE.ClientState;
 
 type
@@ -86,6 +89,9 @@ type
       AContext: TObject): Boolean;
     {$ifdef ANDROID}
     function HandleAnroidIntentAction(const Data: JIntent): Boolean;
+    {$endif}
+    {$ifdef IOS}
+    function HandleIOSIntentAction(const Context: TiOSOpenApplicationContext): Boolean;
     {$endif}
     procedure LoadState(const State: TCEClientState);
     procedure LoadStateFromLink(const Link: string);
@@ -476,9 +482,14 @@ end;
 
 procedure TfrmCEAppMain.HandleActivityMessage(const Sender: TObject; const M: TMessage);
 begin
-  {$ifdef ANDROID or IOS}
+  {$ifdef ANDROID}
   if M is TMessageReceivedNotification then
     HandleAnroidIntentAction(TMessageReceivedNotification(M).Value);
+  {$endif}
+  {$ifdef IOS}
+  Log.d('Received a message of some sorts');
+//  if M is TMessageReceivedNotification then
+//    HandleIOSIntentAction(TMessageReceivedNotification(M).Value);
   {$endif}
 end;
 
@@ -494,10 +505,30 @@ begin
     {$ifdef ANDROID}
     StartupIntent := MainActivity.getIntent;
     if StartupIntent <> nil then
-      HandleAnroidIntentAction(StartupIntent);
+      Result := HandleAnroidIntentAction(StartupIntent);
+    {$endif}
+  end
+  else if AAppEvent = TApplicationEvent.OpenURL then
+  begin
+    {$ifdef IOS}
+    Result := HandleIOSIntentAction(TiOSOpenApplicationContext(AContext));
     {$endif}
   end;
 end;
+
+{$ifdef IOS}
+function TfrmCEAppMain.HandleIOSIntentAction(const Context: TiOSOpenApplicationContext): Boolean;
+begin
+  Result := False;
+
+  if ContainsText(Context.URL, '/z/') then
+  begin
+    Result := True;
+
+    LoadStateFromLink(Context.URL);
+  end;
+end;
+{$endif}
 
 {$ifdef ANDROID}
 function TfrmCEAppMain.HandleAnroidIntentAction(const Data: JIntent): Boolean;
