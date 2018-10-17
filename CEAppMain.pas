@@ -14,7 +14,7 @@ uses
   {$ifdef IOS}
   FMX.Platform.IOS,
   {$endif}
-  FMX.Platform, System.Messaging, CE.ClientState;
+  FMX.Platform, System.Messaging, CE.ClientState, System.Generics.Collections;
 
 type
   TfrmCEAppMain = class(TForm)
@@ -46,6 +46,13 @@ type
     btnSave: TSpeedButton;
     acLoadFromLink: TAction;
     btnLoadFromLink: TSpeedButton;
+    tabLanguageLibraries: TTabItem;
+    lstLanguageLibraries: TListBox;
+    btnSelectLibraries: TSpeedButton;
+    acSelectLibraries: TAction;
+    btnTestSomething: TSpeedButton;
+    aniBusy: TAniIndicator;
+    tmrBusy: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
     procedure pgMainChange(Sender: TObject);
@@ -58,10 +65,14 @@ type
     procedure acToggleCompilerArgumentsExecute(Sender: TObject);
     procedure acSaveExecute(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure acSelectLibrariesExecute(Sender: TObject);
+    procedure btnTestSomethingClick(Sender: TObject);
+    procedure tmrBusyTimer(Sender: TObject);
   private
     { Private declarations }
     FCELanguages: ICELanguages;
     FCECompilers: ICECompilers;
+    FCELibraries: ICELibraries;
     FCECompile: ICECompile;
     FCELinkInfo: ICELinkInfo;
     FSelectedLanguage: TCELanguage;
@@ -72,6 +83,10 @@ type
     FCurrentCompilerArguments: string;
     FHasLoadedCompilers: Boolean;
     FOnCompilersLoaded: TProc;
+    FLoadedLibraries: TCELibraries;
+    FOnLibrariesLoaded: TProc;
+    FHasLoadedLibraries: Boolean;
+    FLoadedState: TCEClientState;
     procedure RegisterIntent;
     procedure InitializeLanguageTab;
     procedure InitializeCodeEditor;
@@ -95,6 +110,13 @@ type
     {$endif}
     procedure LoadState(const State: TCEClientState);
     procedure LoadStateFromLink(const Link: string);
+    procedure UpdateLibrariesList;
+    procedure SelectLibraries(const Libs: TList<TCEClientStateLibraryVersion>);
+    procedure ShowAssemblyOutput;
+    procedure ShowCompilerOutputAndErrors;
+    procedure EnableBusyIndicator;
+    procedure DisableBusyIndicator;
+    function GetSelectedLibraries: TList<TCELibraryVersion>;
   public
     { Public declarations }
   end;
@@ -108,10 +130,10 @@ uses
 {$ifdef ANDROID}
   FMX.Platform.Android, Androidapi.JNI.Net, Androidapi.JNI.Os, Androidapi.Helpers,
 {$endif}
-  CE.Languages, System.Generics.Collections, CE.Compilers, CE.Compile,
+  CE.Languages, CE.Compilers, CE.Compile,
   FMX.VirtualKeyboard, FMX.DialogService,
   System.IOUtils, System.DateUtils, System.StrUtils, CE.LinkInfo,
-  CE.LinkSaver;
+  CE.LinkSaver, CE.Libraries;
 
 {$R *.fmx}
 {$R *.LgXhdpiPh.fmx ANDROID}
@@ -119,12 +141,18 @@ uses
 {$R *.iPhone4in.fmx IOS}
 
 procedure TfrmCEAppMain.acCompileExecute(Sender: TObject);
+var
+  SelectedLibraries: TList<TCELibraryVersion>;
 begin
   if Assigned(FSelectedLanguage) and Assigned(FSelectedCompiler) then
   begin
-    FCECompile.Compile(FSelectedLanguage.Id, FSelectedCompiler.CompilerId, edCodeEditor.Text, FCurrentCompilerArguments,
+    SelectedLibraries := GetSelectedLibraries;
+
+    FCECompile.Compile(FSelectedLanguage.Id, FSelectedCompiler.CompilerId, edCodeEditor.Text, FCurrentCompilerArguments, SelectedLibraries,
       procedure(CompileResult: TCECompileResult)
       begin
+        SelectedLibraries.Free;
+
         FLatestCompileResult.Free;
         FLatestCompileResult := CompileResult;
 
@@ -169,15 +197,117 @@ begin
   edCodeEditor.Text := Code;
 end;
 
+procedure TfrmCEAppMain.SelectLibraries(const Libs: TList<TCEClientStateLibraryVersion>);
+var
+  Lib: TCEClientStateLibraryVersion;
+  LibVersion: TCELibraryVersion;
+  Idx: Integer;
+begin
+  for Idx := 0 to lstLanguageLibraries.Count - 1 do
+  begin
+    TListBoxItem(lstLanguageLibraries.ListItems[Idx]).IsChecked := False;
+  end;
+
+  for Lib in Libs do
+  begin
+    LibVersion := FLoadedLibraries.GetLibraryVersion(Lib.LibraryId, Lib.Version);
+    if Assigned(LibVersion) then
+    begin
+      Idx := lstLanguageLibraries.Items.IndexOfObject(LibVersion);
+      if Idx <> -1 then
+      begin
+        lstLanguageLibraries.ItemByIndex(Idx).IsChecked := True;
+      end;
+    end;
+  end;
+end;
+
+procedure TfrmCEAppMain.ShowAssemblyOutput;
+var
+  AsmLine: TCEAssemblyLine;
+begin
+  lstAssembly.BeginUpdate;
+  try
+    lstAssembly.Lines.Clear;
+    if Assigned(FLatestCompileResult) then
+    begin
+      for AsmLine in FLatestCompileResult.Assembly do
+      begin
+        lstAssembly.Lines.AddObject(AsmLine.Text, AsmLine);
+      end;
+    end;
+  finally
+    lstAssembly.EndUpdate;
+  end;
+end;
+
+procedure TfrmCEAppMain.ShowCompilerOutputAndErrors;
+var
+  ErrorLine: TCEErrorLine;
+begin
+  lstCompilerOutput.BeginUpdate;
+  try
+    lstCompilerOutput.Lines.Clear;
+    if Assigned(FLatestCompileResult) then
+    begin
+      for ErrorLine in FLatestCompileResult.CompilerOutput do
+      begin
+        lstCompilerOutput.Lines.AddObject(ErrorLine.Text, ErrorLine);
+      end;
+    end;
+  finally
+    lstCompilerOutput.EndUpdate;
+  end;
+end;
+
+procedure TfrmCEAppMain.EnableBusyIndicator;
+begin
+  if not aniBusy.Enabled then
+  begin
+    aniBusy.Visible := True;
+    aniBusy.Enabled := True;
+  end;
+end;
+
+procedure TfrmCEAppMain.DisableBusyIndicator;
+begin
+  if aniBusy.Enabled then
+  begin
+    aniBusy.Enabled := False;
+    aniBusy.Visible := False;
+  end;
+end;
+
+procedure TfrmCEAppMain.tmrBusyTimer(Sender: TObject);
+begin
+  if not Assigned(FLoadedLanguages) then
+  begin
+    EnableBusyIndicator;
+  end
+  else
+  begin
+    if not Assigned(FSelectedLanguage) then
+    begin
+      DisableBusyIndicator;
+    end
+    else
+    begin
+      if not (FHasLoadedCompilers and FHasLoadedLibraries) then
+      begin
+        EnableBusyIndicator;
+      end
+      else
+      begin
+        DisableBusyIndicator;
+      end;
+    end;
+  end;
+end;
+
 procedure TfrmCEAppMain.SelectCompiler(const Id: string);
 var
   Compiler: TCECompiler;
 begin
-  while not FHasLoadedCompilers do
-  begin
-    Sleep(100);
-  end;
-
   if Assigned(FLoadedCompilers) and (FLoadedCompilers.Count <> 0) then
   begin
     Compiler := FLoadedCompilers.FindById(Id);
@@ -195,21 +325,32 @@ var
   Session: TCEClientStateSession;
   Compiler: TCEClientStateCompiler;
 begin
+  FLoadedState.Free;
+  FLoadedState := State;
+
   TThread.Synchronize(nil,
     procedure
     begin
       Session := State.Sessions.First;
+      Compiler := Session.Compilers.First;
+
       FOnCompilersLoaded :=
         procedure
         begin
           TypeCode(Session.Source);
 
-          Compiler := Session.Compilers.First;
           SelectCompiler(Compiler.Id);
 
           SetCompilerOptions(Compiler.Options);
           acCompile.Execute;
         end;
+
+      FOnLibrariesLoaded :=
+        procedure
+        begin
+          SelectLibraries(Compiler.Libs);
+        end;
+
       SelectLanguage(Session.Language);
     end);
 end;
@@ -223,19 +364,39 @@ begin
     end);
 end;
 
+function TfrmCEAppMain.GetSelectedLibraries: TList<TCELibraryVersion>;
+var
+  Idx: Integer;
+begin
+  Result := TList<TCELibraryVersion>.Create;
+  for Idx := 0 to lstLanguageLibraries.Count - 1 do
+  begin
+    if lstLanguageLibraries.ListItems[Idx].IsChecked then
+    begin
+      Result.Add(lstLanguageLibraries.ListItems[Idx].Data as TCELibraryVersion);
+    end;
+  end;
+end;
+
 procedure TfrmCEAppMain.acSaveExecute(Sender: TObject);
 var
   Saver: TCELinkSaver;
   Svc: IFMXClipboardService;
+  SelectedLibraries: TList<TCELibraryVersion>;
 begin
+  SelectedLibraries := GetSelectedLibraries;
+
   Saver := TCELinkSaver.Create;
   Saver.Save(
     FSelectedLanguage.Id,
     FSelectedCompiler.CompilerId,
     edCodeEditor.Lines.Text,
     FCurrentCompilerArguments,
+    SelectedLibraries,
     procedure(LinkId: string)
     begin
+      SelectedLibraries.Free;
+
       TThread.Synchronize(nil,
         procedure
         begin
@@ -248,6 +409,11 @@ begin
         end);
     end
   );
+end;
+
+procedure TfrmCEAppMain.acSelectLibrariesExecute(Sender: TObject);
+begin
+  pgMain.ActiveTab := tabLanguageLibraries;
 end;
 
 procedure TfrmCEAppMain.acToggleCompilerArgumentsExecute(Sender: TObject);
@@ -290,6 +456,7 @@ procedure TfrmCEAppMain.FormCreate(Sender: TObject);
 begin
   FCELanguages := TCELanguagesFromRest.Create;
   FCECompilers := TCECompilersFromRest.Create;
+  FCELibraries := TCELibrariesFromRest.Create;
   FCECompile := TCECompileViaRest.Create;
   FCELinkInfo := TCELinkInfo.Create;
 
@@ -305,6 +472,8 @@ end;
 
 procedure TfrmCEAppMain.FormDestroy(Sender: TObject);
 begin
+  FreeAndNil(FLoadedState);
+  FreeAndNil(FLoadedLibraries);
   FreeAndNil(FLoadedLanguages);
   FreeAndNil(FLoadedCompilers);
   FreeAndNil(FLatestCompileResult);
@@ -383,12 +552,25 @@ begin
       cbCompilerSelection.BeginUpdate;
       try
         cbCompilerSelection.Clear;
-        cbCompilerSelection.Visible := True;
         for Compiler in FLoadedCompilers do
         begin
           cbCompilerSelection.Items.AddObject(Compiler.Description, Compiler);
         end;
-        cbCompilerSelection.ItemIndex := cbCompilerSelection.Items.IndexOfObject(FLoadedCompilers.First);
+
+        if FSelectedLanguage.DefaultCompilerId = '' then
+        begin
+          cbCompilerSelection.ItemIndex :=
+            cbCompilerSelection.Items.IndexOfObject(FLoadedCompilers.First);
+        end
+        else
+        begin
+          cbCompilerSelection.ItemIndex :=
+            cbCompilerSelection.Items.IndexOfObject(
+              FLoadedCompilers.FindById(FSelectedLanguage.DefaultCompilerId)
+            );
+        end;
+
+        cbCompilerSelection.Visible := True;
       finally
         cbCompilerSelection.EndUpdate;
       end;
@@ -396,37 +578,9 @@ begin
 end;
 
 procedure TfrmCEAppMain.InitializeCompilerOutput;
-var
-  AsmLine: TCEAssemblyLine;
-  ErrorLine: TCEErrorLine;
 begin
-  lstCompilerOutput.BeginUpdate;
-  try
-    lstCompilerOutput.Lines.Clear;
-    if Assigned(FLatestCompileResult) then
-    begin
-      for ErrorLine in FLatestCompileResult.CompilerOutput do
-      begin
-        lstCompilerOutput.Lines.AddObject(ErrorLine.Text, ErrorLine);
-      end;
-    end;
-  finally
-    lstCompilerOutput.EndUpdate;
-  end;
-
-  lstAssembly.BeginUpdate;
-  try
-    lstAssembly.Lines.Clear;
-    if Assigned(FLatestCompileResult) then
-    begin
-      for AsmLine in FLatestCompileResult.Assembly do
-      begin
-        lstAssembly.Lines.AddObject(AsmLine.Text, AsmLine);
-      end;
-    end;
-  finally
-    lstAssembly.EndUpdate;
-  end;
+  ShowCompilerOutputAndErrors;
+  ShowAssemblyOutput;
 end;
 
 procedure TfrmCEAppMain.indicatorCompilationClick(Sender: TObject);
@@ -560,6 +714,11 @@ begin
   end;
 end;
 
+procedure TfrmCEAppMain.btnTestSomethingClick(Sender: TObject);
+begin
+  LoadStateFromLink('https://godbolt.org/beta/z/-vvS05');
+end;
+
 procedure TfrmCEAppMain.InitializeLanguageTab;
 begin
   if (lstLanguages.Count = 0) then
@@ -585,6 +744,7 @@ begin
     if FSelectedLanguage <> NewLanguage then
     begin
       FHasLoadedCompilers := False;
+      FHasLoadedLibraries := False;
       edCodeEditor.Text := '';
       FSelectedLanguage := NewLanguage;
       cbCompilerSelection.Visible := False;
@@ -604,6 +764,36 @@ begin
             FOnCompilersLoaded := nil;
           end;
         end);
+
+      FCELibraries.GetLibraries(FSelectedLanguage.Id,
+        procedure(Libraries: TCELibraries)
+        begin
+          FLoadedLibraries.Free;
+          FLoadedLibraries := Libraries;
+
+          UpdateLibrariesList;
+
+          FHasLoadedLibraries := True;
+          if Assigned(FOnLibrariesLoaded) then
+          begin
+            FOnLibrariesLoaded();
+            FOnLibrariesLoaded := nil;
+          end;
+        end);
+    end
+    else
+    begin
+      if FHasLoadedCompilers and Assigned(FOnCompilersLoaded) then
+      begin
+        FOnCompilersLoaded();
+        FOnCompilersLoaded := nil;
+      end;
+
+      if FHasLoadedLibraries and Assigned(FOnLibrariesLoaded) then
+      begin
+        FOnLibrariesLoaded();
+        FOnLibrariesLoaded := nil;
+      end;
     end;
   end;
 
@@ -611,6 +801,29 @@ begin
   begin
     edCodeEditor.Text := FSelectedLanguage.ExampleCode;
   end;
+end;
+
+procedure TfrmCEAppMain.UpdateLibrariesList;
+begin
+  TThread.Synchronize(nil,
+    procedure
+    var
+      Lib: TCELibrary;
+      Version: TCELibraryVersion;
+    begin
+      lstLanguageLibraries.Clear;
+
+      for Lib in FLoadedLibraries do
+      begin
+        for Version in Lib.Versions do
+        begin
+          lstLanguageLibraries.Items.AddObject(
+            Lib.Name + ' - ' + Version.Version,
+            Version
+          );
+        end;
+      end;
+    end);
 end;
 
 end.

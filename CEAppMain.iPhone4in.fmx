@@ -8,7 +8,7 @@ inherited frmCEAppMain_iPhone4in: TfrmCEAppMain_iPhone4in
       Position.X = 276.000000000000000000
     end
     inherited lblCurrentTitle: TSpeedButton
-      Size.Width = 184.000000000000000000
+      Size.Width = 140.000000000000000000
     end
     inherited btnSave: TSpeedButton
       Position.X = 232.000000000000000000
@@ -18,6 +18,8 @@ inherited frmCEAppMain_iPhone4in: TfrmCEAppMain_iPhone4in
     Size.Width = 320.000000000000000000
     Size.Height = 460.000000000000000000
     Sizes = (
+      320s
+      460s
       320s
       460s
       320s
@@ -62,18 +64,37 @@ inherited frmCEAppMain_iPhone4in: TfrmCEAppMain_iPhone4in
         Viewport.Height = 339.000000000000000000
       end
     end
+    inherited tabLanguageLibraries: TTabItem
+      Size.Width = 8.000000000000000000
+      Size.Height = 8.000000000000000000
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited lstLanguageLibraries: TListBox
+        Size.Width = 320.000000000000000000
+        Size.Height = 460.000000000000000000
+        Viewport.Width = 320.000000000000000000
+        Viewport.Height = 460.000000000000000000
+      end
+    end
   end
   inherited BottomToolBar: TToolBar
     Position.Y = 504.000000000000000000
     Size.Width = 320.000000000000000000
     inherited cbCompilerSelection: TComboBox
-      Size.Width = 187.000000000000000000
+      Size.Width = 143.000000000000000000
     end
     inherited btnCompilerSettings: TSpeedButton
-      Position.X = 232.000000000000000000
+      Position.X = 188.000000000000000000
     end
     inherited btnKeyboard: TSpeedButton
       Position.X = 276.000000000000000000
     end
+  end
+  inherited aniBusy: TAniIndicator
+    Enabled = True
+  end
+  inherited tmrBusy: TTimer [4]
+  end
+  inherited lstActions: TActionList [5]
   end
 end

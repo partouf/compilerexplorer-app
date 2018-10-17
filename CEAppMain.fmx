@@ -42,7 +42,7 @@ object frmCEAppMain: TfrmCEAppMain
       Align = Client
       Enabled = True
       ImageIndex = -1
-      Size.Width = 248.000000000000000000
+      Size.Width = 204.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
     end
@@ -55,7 +55,17 @@ object frmCEAppMain: TfrmCEAppMain
       Size.Width = 44.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
-      StyleLookup = 'bookmarkstoolbutton'
+      StyleLookup = 'actiontoolbutton'
+    end
+    object btnTestSomething: TSpeedButton
+      Align = Left
+      Position.X = 48.000000000000000000
+      Size.Width = 44.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'organizetoolbutton'
+      Text = 'btnTestSomething'
+      OnClick = btnTestSomethingClick
     end
   end
   object pgMain: TTabControl
@@ -65,11 +75,13 @@ object frmCEAppMain: TfrmCEAppMain
     Size.Height = 479.000000000000000000
     Size.PlatformDefault = False
     TabHeight = 49.000000000000000000
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 1
     TabPosition = None
     OnChange = pgMainChange
     Sizes = (
+      384s
+      479s
       384s
       479s
       384s
@@ -80,7 +92,7 @@ object frmCEAppMain: TfrmCEAppMain
       CustomIcon = <
         item
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 11.000000000000000000
       Size.Height = 11.000000000000000000
       Size.PlatformDefault = False
@@ -199,6 +211,32 @@ object frmCEAppMain: TfrmCEAppMain
         Viewport.Height = 350.000000000000000000
       end
     end
+    object tabLanguageLibraries: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = True
+      Size.Width = 11.000000000000000000
+      Size.Height = 11.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Libraries'
+      object lstLanguageLibraries: TListBox
+        Align = Client
+        Size.Width = 384.000000000000000000
+        Size.Height = 479.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        DisableFocusEffect = True
+        DefaultItemStyles.ItemStyle = ''
+        DefaultItemStyles.GroupHeaderStyle = ''
+        DefaultItemStyles.GroupFooterStyle = ''
+        ShowCheckboxes = True
+        Viewport.Width = 384.000000000000000000
+        Viewport.Height = 479.000000000000000000
+      end
+    end
   end
   object BottomToolBar: TToolBar
     Align = Bottom
@@ -223,7 +261,7 @@ object frmCEAppMain: TfrmCEAppMain
       Align = Client
       Margins.Top = 10.000000000000000000
       Margins.Bottom = 10.000000000000000000
-      Size.Width = 251.000000000000000000
+      Size.Width = 207.000000000000000000
       Size.Height = 30.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
@@ -234,7 +272,7 @@ object frmCEAppMain: TfrmCEAppMain
       Align = Right
       Enabled = True
       ImageIndex = -1
-      Position.X = 296.000000000000000000
+      Position.X = 252.000000000000000000
       Size.Width = 44.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
@@ -249,6 +287,26 @@ object frmCEAppMain: TfrmCEAppMain
       StyleLookup = 'composetoolbutton'
       OnClick = btnKeyboardClick
     end
+    object btnSelectLibraries: TSpeedButton
+      Action = acSelectLibraries
+      Align = Right
+      Enabled = True
+      ImageIndex = -1
+      Position.X = 296.000000000000000000
+      Size.Width = 44.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'bookmarkstoolbutton'
+    end
+  end
+  object aniBusy: TAniIndicator
+    Align = Center
+    StyleLookup = 'aniindicatorstyle'
+    Size.Width = 50.000000000000000000
+    Size.Height = 50.000000000000000000
+    Size.PlatformDefault = False
+    Style = Circular
+    Visible = False
   end
   object lstActions: TActionList
     Left = 240
@@ -284,5 +342,15 @@ object frmCEAppMain: TfrmCEAppMain
       Category = 'Tab'
       Text = 'Load from link'
     end
+    object acSelectLibraries: TAction
+      Category = 'Tab'
+      OnExecute = acSelectLibrariesExecute
+    end
+  end
+  object tmrBusy: TTimer
+    Interval = 500
+    OnTimer = tmrBusyTimer
+    Left = 296
+    Top = 228
   end
 end
