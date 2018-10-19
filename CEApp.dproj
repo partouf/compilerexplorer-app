@@ -399,6 +399,7 @@
         <DCCReference Include="..\compilerexplorer-api\CE\CE.ClientState.pas"/>
         <DCCReference Include="..\compilerexplorer-api\CE\CE.LinkSaver.pas"/>
         <DCCReference Include="..\compilerexplorer-api\CE\CE.Libraries.pas"/>
+        <DCCReference Include="CEAppState.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
