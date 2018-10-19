@@ -1,12 +1,13 @@
 object frmCEAppMain: TfrmCEAppMain
   Left = 0
   Top = 0
-  Caption = 'CEApp'
+  Caption = 'CE42'
   ClientHeight = 567
   ClientWidth = 384
   FormFactor.Width = 1440
   FormFactor.Height = 900
   FormFactor.Devices = [Desktop]
+  FullScreen = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   DesignerMasterStyle = 2
@@ -21,10 +22,10 @@ object frmCEAppMain: TfrmCEAppMain
       Align = MostLeft
       Enabled = True
       ImageIndex = -1
-      Size.Width = 48.000000000000000000
+      Size.Width = 44.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
-      StyleLookup = 'backtoolbutton'
+      StyleLookup = 'arrowlefttoolbutton'
     end
     object btnNext: TSpeedButton
       Action = acNextTab
@@ -35,14 +36,14 @@ object frmCEAppMain: TfrmCEAppMain
       Size.Width = 44.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
-      StyleLookup = 'nexttoolbutton'
+      StyleLookup = 'arrowrighttoolbutton'
     end
     object lblCurrentTitle: TSpeedButton
       Action = acHeaderClick
       Align = Client
       Enabled = True
       ImageIndex = -1
-      Size.Width = 204.000000000000000000
+      Size.Width = 208.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
     end
@@ -57,15 +58,28 @@ object frmCEAppMain: TfrmCEAppMain
       Size.PlatformDefault = False
       StyleLookup = 'actiontoolbutton'
     end
-    object btnTestSomething: TSpeedButton
+    object btnLoadFromLink: TSpeedButton
+      Action = acLoadFromLink
       Align = Left
-      Position.X = 48.000000000000000000
+      Enabled = True
+      ImageIndex = -1
+      Position.X = 44.000000000000000000
       Size.Width = 44.000000000000000000
       Size.Height = 44.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'organizetoolbutton'
-      Text = 'btnTestSomething'
-      OnClick = btnTestSomethingClick
+    end
+    object btnPlaySessionCompiler: TSpeedButton
+      Action = acPlaySessionCompiler
+      Align = Right
+      Enabled = True
+      ImageIndex = -1
+      Position.X = 252.000000000000000000
+      Size.Width = 44.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'playtoolbutton'
+      Visible = False
     end
   end
   object pgMain: TTabControl
@@ -75,7 +89,7 @@ object frmCEAppMain: TfrmCEAppMain
     Size.Height = 479.000000000000000000
     Size.PlatformDefault = False
     TabHeight = 49.000000000000000000
-    TabIndex = 3
+    TabIndex = 1
     TabOrder = 1
     TabPosition = None
     OnChange = pgMainChange
@@ -87,12 +101,39 @@ object frmCEAppMain: TfrmCEAppMain
       384s
       479s
       384s
+      479s
+      384s
       479s)
-    object tabLanguageSelection: TTabItem
+    object tabClientState: TTabItem
       CustomIcon = <
         item
         end>
       IsSelected = False
+      Size.Width = 11.000000000000000000
+      Size.Height = 11.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Incoming link'
+      Visible = False
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      object treeClientState: TTreeView
+        Align = Client
+        Size.Width = 384.000000000000000000
+        Size.Height = 479.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = 'treeviewstyle'
+        TabOrder = 0
+        Viewport.Width = 384.000000000000000000
+        Viewport.Height = 479.000000000000000000
+      end
+    end
+    object tabLanguageSelection: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = True
       Size.Width = 11.000000000000000000
       Size.Height = 11.000000000000000000
       Size.PlatformDefault = False
@@ -113,17 +154,6 @@ object frmCEAppMain: TfrmCEAppMain
         DefaultItemStyles.GroupFooterStyle = ''
         Viewport.Width = 384.000000000000000000
         Viewport.Height = 479.000000000000000000
-      end
-      object btnLoadFromLink: TSpeedButton
-        Action = acLoadFromLink
-        Align = Bottom
-        Enabled = True
-        ImageIndex = -1
-        Position.Y = 435.000000000000000000
-        Size.Width = 384.000000000000000000
-        Size.Height = 44.000000000000000000
-        Size.PlatformDefault = False
-        Visible = False
       end
     end
     object tabCodeEditor: TTabItem
@@ -154,6 +184,36 @@ object frmCEAppMain: TfrmCEAppMain
         TabOrder = 0
         Viewport.Width = 376.000000000000000000
         Viewport.Height = 471.000000000000000000
+      end
+    end
+    object tabLanguageLibraries: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 11.000000000000000000
+      Size.Height = 11.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Libraries'
+      Visible = False
+      ExplicitSize.cx = 11.000000000000000000
+      ExplicitSize.cy = 11.000000000000000000
+      object lstLanguageLibraries: TListBox
+        Align = Client
+        Size.Width = 384.000000000000000000
+        Size.Height = 479.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        DisableFocusEffect = True
+        DefaultItemStyles.ItemStyle = ''
+        DefaultItemStyles.GroupHeaderStyle = ''
+        DefaultItemStyles.GroupFooterStyle = ''
+        ShowCheckboxes = True
+        OnChangeCheck = lstLanguageLibrariesChangeCheck
+        Viewport.Width = 384.000000000000000000
+        Viewport.Height = 479.000000000000000000
       end
     end
     object tabCompilerOutput: TTabItem
@@ -209,32 +269,6 @@ object frmCEAppMain: TfrmCEAppMain
         TabOrder = 1
         Viewport.Width = 376.000000000000000000
         Viewport.Height = 350.000000000000000000
-      end
-    end
-    object tabLanguageLibraries: TTabItem
-      CustomIcon = <
-        item
-        end>
-      IsSelected = True
-      Size.Width = 11.000000000000000000
-      Size.Height = 11.000000000000000000
-      Size.PlatformDefault = False
-      StyleLookup = ''
-      TabOrder = 0
-      Text = 'Libraries'
-      object lstLanguageLibraries: TListBox
-        Align = Client
-        Size.Width = 384.000000000000000000
-        Size.Height = 479.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 0
-        DisableFocusEffect = True
-        DefaultItemStyles.ItemStyle = ''
-        DefaultItemStyles.GroupHeaderStyle = ''
-        DefaultItemStyles.GroupFooterStyle = ''
-        ShowCheckboxes = True
-        Viewport.Width = 384.000000000000000000
-        Viewport.Height = 479.000000000000000000
       end
     end
   end
@@ -308,9 +342,15 @@ object frmCEAppMain: TfrmCEAppMain
     Style = Circular
     Visible = False
   end
+  object tmrBusy: TTimer
+    Interval = 500
+    OnTimer = tmrBusyTimer
+    Left = 296
+    Top = 228
+  end
   object lstActions: TActionList
-    Left = 240
-    Top = 24
+    Left = 248
+    Top = 72
     object acPreviousTab: TPreviousTabAction
       Category = 'Tab'
       TabControl = pgMain
@@ -340,17 +380,15 @@ object frmCEAppMain: TfrmCEAppMain
     end
     object acLoadFromLink: TAction
       Category = 'Tab'
-      Text = 'Load from link'
+      OnExecute = acLoadFromLinkExecute
     end
     object acSelectLibraries: TAction
       Category = 'Tab'
       OnExecute = acSelectLibrariesExecute
     end
-  end
-  object tmrBusy: TTimer
-    Interval = 500
-    OnTimer = tmrBusyTimer
-    Left = 296
-    Top = 228
+    object acPlaySessionCompiler: TAction
+      Category = 'Tab'
+      OnExecute = acPlaySessionCompilerExecute
+    end
   end
 end

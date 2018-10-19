@@ -4,20 +4,29 @@ inherited frmCEAppMain_iPhone55in: TfrmCEAppMain_iPhone55in
   DesignerMasterStyle = 3
   inherited TopToolBar: TToolBar
     Size.Width = 414.000000000000000000
+    inherited btnBack: TSpeedButton
+      Size.Width = 44.000000000000000000
+    end
     inherited btnNext: TSpeedButton
       Position.X = 370.000000000000000000
     end
     inherited lblCurrentTitle: TSpeedButton
-      Size.Width = 234.000000000000000000
+      Size.Width = 238.000000000000000000
     end
     inherited btnSave: TSpeedButton
       Position.X = 326.000000000000000000
+    end
+    inherited btnLoadFromLink: TSpeedButton
+      Position.X = 44.000000000000000000
     end
   end
   inherited pgMain: TTabControl
     Size.Width = 414.000000000000000000
     Size.Height = 628.000000000000000000
+    TabIndex = 0
     Sizes = (
+      384s
+      479s
       414s
       628s
       414s
@@ -26,7 +35,19 @@ inherited frmCEAppMain_iPhone55in: TfrmCEAppMain_iPhone55in
       628s
       414s
       628s)
+    inherited tabClientState: TTabItem
+      IsSelected = True
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited treeClientState: TTreeView
+        Viewport.Width = 384.000000000000000000
+        Viewport.Height = 479.000000000000000000
+      end
+    end
     inherited tabLanguageSelection: TTabItem
+      IsSelected = False
+      Size.Width = 11.000000000000000000
+      Size.Height = 11.000000000000000000
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
       inherited lstLanguages: TListBox
@@ -37,6 +58,8 @@ inherited frmCEAppMain_iPhone55in: TfrmCEAppMain_iPhone55in
       end
     end
     inherited tabCodeEditor: TTabItem
+      Size.Width = 11.000000000000000000
+      Size.Height = 11.000000000000000000
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
       inherited edCodeEditor: TMemo
@@ -47,6 +70,8 @@ inherited frmCEAppMain_iPhone55in: TfrmCEAppMain_iPhone55in
       end
     end
     inherited tabCompilerOutput: TTabItem
+      Size.Width = 11.000000000000000000
+      Size.Height = 11.000000000000000000
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
       inherited lstCompilerOutput: TMemo
@@ -65,8 +90,8 @@ inherited frmCEAppMain_iPhone55in: TfrmCEAppMain_iPhone55in
       end
     end
     inherited tabLanguageLibraries: TTabItem
-      Size.Width = 8.000000000000000000
-      Size.Height = 8.000000000000000000
+      Size.Width = 11.000000000000000000
+      Size.Height = 11.000000000000000000
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
       inherited lstLanguageLibraries: TListBox
@@ -82,6 +107,7 @@ inherited frmCEAppMain_iPhone55in: TfrmCEAppMain_iPhone55in
     Size.Width = 414.000000000000000000
     inherited cbCompilerSelection: TComboBox
       Size.Width = 237.000000000000000000
+      Size.Height = 30.000000000000000000
     end
     inherited btnCompilerSettings: TSpeedButton
       Position.X = 326.000000000000000000
@@ -89,12 +115,11 @@ inherited frmCEAppMain_iPhone55in: TfrmCEAppMain_iPhone55in
     inherited btnKeyboard: TSpeedButton
       Position.X = 370.000000000000000000
     end
+    inherited btnSelectLibraries: TSpeedButton
+      Position.X = 282.000000000000000000
+    end
   end
   inherited aniBusy: TAniIndicator
     Enabled = True
-  end
-  inherited tmrBusy: TTimer [4]
-  end
-  inherited lstActions: TActionList [5]
   end
 end

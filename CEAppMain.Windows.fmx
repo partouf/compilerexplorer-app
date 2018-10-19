@@ -1,0 +1,72 @@
+inherited frmCEAppMain_Windows: TfrmCEAppMain_Windows
+  FullScreen = False
+  DesignerMasterStyle = 0
+  inherited pgMain: TTabControl
+    Sizes = (
+      384s
+      479s
+      384s
+      479s
+      384s
+      479s
+      384s
+      479s
+      384s
+      479s)
+    inherited tabClientState: TTabItem
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited treeClientState: TTreeView
+        Viewport.Width = 384.000000000000000000
+        Viewport.Height = 479.000000000000000000
+      end
+    end
+    inherited tabLanguageSelection: TTabItem
+      Size.Width = 8.000000000000000000
+      Size.Height = 8.000000000000000000
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited lstLanguages: TListBox
+        Viewport.Width = 380.000000000000000000
+        Viewport.Height = 475.000000000000000000
+      end
+    end
+    inherited tabCodeEditor: TTabItem
+      Size.Width = 8.000000000000000000
+      Size.Height = 8.000000000000000000
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited edCodeEditor: TMemo
+        Viewport.Width = 384.000000000000000000
+        Viewport.Height = 479.000000000000000000
+      end
+    end
+    inherited tabLanguageLibraries: TTabItem
+      ExplicitSize.cx = 11.000000000000000000
+      ExplicitSize.cy = 11.000000000000000000
+      inherited lstLanguageLibraries: TListBox
+        Viewport.Width = 384.000000000000000000
+        Viewport.Height = 479.000000000000000000
+      end
+    end
+    inherited tabCompilerOutput: TTabItem
+      Size.Width = 8.000000000000000000
+      Size.Height = 8.000000000000000000
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited lstCompilerOutput: TMemo
+        Viewport.Width = 384.000000000000000000
+        Viewport.Height = 113.000000000000000000
+      end
+      inherited lstAssembly: TMemo
+        Viewport.Width = 384.000000000000000000
+        Viewport.Height = 358.000000000000000000
+      end
+    end
+  end
+  inherited BottomToolBar: TToolBar
+    inherited cbCompilerSelection: TComboBox
+      Size.Height = 24.000000000000000000
+    end
+  end
+end

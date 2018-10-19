@@ -14,7 +14,8 @@ uses
   {$ifdef IOS}
   FMX.Platform.IOS,
   {$endif}
-  FMX.Platform, System.Messaging, CE.ClientState, System.Generics.Collections;
+  FMX.Platform, System.Messaging, CE.ClientState, System.Generics.Collections,
+  FMX.TreeView;
 
 type
   TfrmCEAppMain = class(TForm)
@@ -45,14 +46,17 @@ type
     acSave: TAction;
     btnSave: TSpeedButton;
     acLoadFromLink: TAction;
-    btnLoadFromLink: TSpeedButton;
     tabLanguageLibraries: TTabItem;
     lstLanguageLibraries: TListBox;
     btnSelectLibraries: TSpeedButton;
     acSelectLibraries: TAction;
-    btnTestSomething: TSpeedButton;
+    btnLoadFromLink: TSpeedButton;
     aniBusy: TAniIndicator;
     tmrBusy: TTimer;
+    tabClientState: TTabItem;
+    treeClientState: TTreeView;
+    btnPlaySessionCompiler: TSpeedButton;
+    acPlaySessionCompiler: TAction;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
     procedure pgMainChange(Sender: TObject);
@@ -66,8 +70,10 @@ type
     procedure acSaveExecute(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure acSelectLibrariesExecute(Sender: TObject);
-    procedure btnTestSomethingClick(Sender: TObject);
     procedure tmrBusyTimer(Sender: TObject);
+    procedure acLoadFromLinkExecute(Sender: TObject);
+    procedure acPlaySessionCompilerExecute(Sender: TObject);
+    procedure lstLanguageLibrariesChangeCheck(Sender: TObject);
   private
     { Private declarations }
     FCELanguages: ICELanguages;
@@ -117,6 +123,9 @@ type
     procedure EnableBusyIndicator;
     procedure DisableBusyIndicator;
     function GetSelectedLibraries: TList<TCELibraryVersion>;
+    procedure ShowPossibleSessions;
+    procedure LoadSessionAndCompiler(const Session: TCEClientStateSession;
+      const Compiler: TCEClientStateCompiler);
   public
     { Public declarations }
   end;
@@ -136,9 +145,7 @@ uses
   CE.LinkSaver, CE.Libraries;
 
 {$R *.fmx}
-{$R *.LgXhdpiPh.fmx ANDROID}
-{$R *.iPhone55in.fmx IOS}
-{$R *.iPhone4in.fmx IOS}
+{$R *.Windows.fmx MSWINDOWS}
 
 procedure TfrmCEAppMain.acCompileExecute(Sender: TObject);
 var
@@ -179,17 +186,54 @@ begin
   end;
 end;
 
+procedure TfrmCEAppMain.acLoadFromLinkExecute(Sender: TObject);
+var
+  DefaultUrl: string;
+begin
+  DefaultUrl := UrlCompilerExplorer + '/z/-vvS05';
+
+  TDialogService.InputQuery('Got a link?', [''], [DefaultUrl],
+    procedure(const AResult: TModalResult; const AValues: array of string)
+    begin
+      LoadStateFromLink(AValues[0]);
+    end);
+end;
+
+procedure TfrmCEAppMain.acPlaySessionCompilerExecute(Sender: TObject);
+var
+  Item: TTreeViewItem;
+begin
+  if Assigned(treeClientState.Selected) then
+  begin
+    Item := treeClientState.Selected;
+    if Item.TagObject is TCEClientStateCompiler then
+    begin
+      if Item.ParentItem.TagObject is TCEClientStateSession then
+      begin
+        LoadSessionAndCompiler(
+          Item.ParentItem.TagObject as TCEClientStateSession,
+          Item.TagObject as TCEClientStateCompiler
+        );
+      end;
+    end;
+  end;
+end;
+
 procedure TfrmCEAppMain.SelectLanguage(const Id: string);
 var
   Language: TCELanguage;
 begin
-  if Assigned(FLoadedLanguages) and (FLoadedLanguages.Count <> 0) then
-  begin
-    Language := FLoadedLanguages.GetById(Id);
-    lstLanguages.ItemIndex := lstLanguages.Items.IndexOfObject(Language);
+  TThread.Synchronize(nil,
+    procedure
+    begin
+      if Assigned(FLoadedLanguages) and (FLoadedLanguages.Count <> 0) then
+      begin
+        Language := FLoadedLanguages.GetById(Id);
+        lstLanguages.ItemIndex := lstLanguages.Items.IndexOfObject(Language);
 
-    GoToTab(tabCodeEditor);
-  end;
+        GoToTab(tabCodeEditor);
+      end;
+    end);
 end;
 
 procedure TfrmCEAppMain.TypeCode(const Code: string);
@@ -280,28 +324,32 @@ end;
 
 procedure TfrmCEAppMain.tmrBusyTimer(Sender: TObject);
 begin
-  if not Assigned(FLoadedLanguages) then
-  begin
-    EnableBusyIndicator;
-  end
-  else
-  begin
-    if not Assigned(FSelectedLanguage) then
+  TThread.Synchronize(nil,
+    procedure
     begin
-      DisableBusyIndicator;
-    end
-    else
-    begin
-      if not (FHasLoadedCompilers and FHasLoadedLibraries) then
+      if not Assigned(FLoadedLanguages) then
       begin
         EnableBusyIndicator;
       end
       else
       begin
-        DisableBusyIndicator;
+        if not Assigned(FSelectedLanguage) then
+        begin
+          DisableBusyIndicator;
+        end
+        else
+        begin
+          if not (FHasLoadedCompilers and FHasLoadedLibraries) then
+          begin
+            EnableBusyIndicator;
+          end
+          else
+          begin
+            DisableBusyIndicator;
+          end;
+        end;
       end;
-    end;
-  end;
+    end);
 end;
 
 procedure TfrmCEAppMain.SelectCompiler(const Id: string);
@@ -320,6 +368,76 @@ begin
   FCurrentCompilerArguments := Options;
 end;
 
+procedure TfrmCEAppMain.ShowPossibleSessions;
+var
+  SessionItem: TTreeViewItem;
+  Session: TCEClientStateSession;
+  Language: TCELanguage;
+  SessionCompiler: TCEClientStateCompiler;
+  CompilerItem: TTreeViewItem;
+  Libsummary: string;
+begin
+  for Session in FLoadedState.Sessions do
+  begin
+    Language := FLoadedLanguages.GetById(Session.Language);
+    if Assigned(Language) then
+    begin
+      SessionItem := TTreeViewItem.Create(treeClientState);
+      SessionItem.Text := Language.LanguageName;
+      SessionItem.Parent := treeClientState;
+      SessionItem.TagObject := Session;
+
+      for SessionCompiler in Session.Compilers do
+      begin
+        CompilerItem := TTreeViewItem.Create(treeClientState);
+        Libsummary := SessionCompiler.GetShortLibrarySummary;
+
+        if SessionCompiler.Arguments <> '' then
+          CompilerItem.Text := SessionCompiler.Id + ' /' + SessionCompiler.Arguments + '/'
+        else if Libsummary <> '' then
+          CompilerItem.Text := SessionCompiler.Id + ' [' + Libsummary + ']'
+        else
+          CompilerItem.Text := SessionCompiler.Id;
+
+        CompilerItem.Parent := SessionItem;
+        CompilerItem.TagObject := SessionCompiler;
+      end;
+    end;
+  end;
+
+  treeClientState.ExpandAll;
+end;
+
+procedure TfrmCEAppMain.LoadSessionAndCompiler(const Session: TCEClientStateSession; const Compiler: TCEClientStateCompiler);
+begin
+  FOnCompilersLoaded :=
+    procedure
+    begin
+      TThread.Synchronize(nil,
+        procedure
+        begin
+          TypeCode(Session.Source);
+
+          SelectCompiler(Compiler.Id);
+
+          SetCompilerOptions(Compiler.Arguments);
+          acCompile.Execute;
+        end);
+    end;
+
+  FOnLibrariesLoaded :=
+    procedure
+    begin
+      TThread.Synchronize(nil,
+        procedure
+        begin
+          SelectLibraries(Compiler.Libs);
+        end);
+    end;
+
+  SelectLanguage(Session.Language);
+end;
+
 procedure TfrmCEAppMain.LoadState(const State: TCEClientState);
 var
   Session: TCEClientStateSession;
@@ -331,27 +449,20 @@ begin
   TThread.Synchronize(nil,
     procedure
     begin
-      Session := State.Sessions.First;
-      Compiler := Session.Compilers.First;
+      tabClientState.Visible := True;
+      pgMain.ActiveTab := tabClientState;
 
-      FOnCompilersLoaded :=
-        procedure
-        begin
-          TypeCode(Session.Source);
+      if (State.Sessions.Count = 1) and (State.Sessions.First.Compilers.Count = 1) then
+      begin
+        Session := State.Sessions.First;
+        Compiler := Session.Compilers.First;
 
-          SelectCompiler(Compiler.Id);
-
-          SetCompilerOptions(Compiler.Options);
-          acCompile.Execute;
-        end;
-
-      FOnLibrariesLoaded :=
-        procedure
-        begin
-          SelectLibraries(Compiler.Libs);
-        end;
-
-      SelectLanguage(Session.Language);
+        LoadSessionAndCompiler(Session, Compiler);
+      end
+      else
+      begin
+        ShowPossibleSessions;
+      end;
     end);
 end;
 
@@ -362,6 +473,12 @@ begin
     begin
       LoadState(State);
     end);
+end;
+
+procedure TfrmCEAppMain.lstLanguageLibrariesChangeCheck(Sender: TObject);
+begin
+  FreeAndNil(FLatestCompileResult);
+  HandleCompileResult;
 end;
 
 function TfrmCEAppMain.GetSelectedLibraries: TList<TCELibraryVersion>;
@@ -402,7 +519,7 @@ begin
         begin
           if TPlatformServices.Current.SupportsPlatformService(IFMXClipboardService, Svc) then
           begin
-            Svc.SetClipboard('https://godbolt.org/z/' + LinkId);
+            Svc.SetClipboard(UrlCompilerExplorer + '/z/' + LinkId);
 
             TDialogService.ShowMessage('Link copied to clipboard');
           end;
@@ -483,7 +600,7 @@ procedure TfrmCEAppMain.FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: C
 begin
   if (Key = vkHardwareBack) and (pgMain.TabIndex <> 0) then
   begin
-    pgMain.First;
+    pgMain.ActiveTab := tabLanguageSelection;
     Key := 0;
   end;
 end;
@@ -595,27 +712,34 @@ begin
   else
     lblCurrentTitle.Text := '';
 
-  btnKeyboard.Visible := False;
-  btnSave.Visible := False;
-  BottomToolbar.Visible := pgMain.ActiveTab <> tabLanguageSelection;
+  btnKeyboard.Visible := (pgMain.ActiveTab = tabCodeEditor);
+  btnSave.Visible := (pgMain.ActiveTab = tabCodeEditor);
+  BottomToolbar.Visible := (pgMain.ActiveTab = tabCodeEditor) or (pgMain.ActiveTab = tabCompilerOutput) or (pgMain.ActiveTab = tabLanguageLibraries);
+  btnBack.Visible := (pgMain.ActiveTab = tabCodeEditor) or (pgMain.ActiveTab = tabCompilerOutput) or (pgMain.ActiveTab = tabLanguageLibraries);
+  btnNext.Visible := (pgMain.ActiveTab <> tabClientState);
+  btnPlaySessionCompiler.Visible := (pgMain.ActiveTab = tabClientState);
 
   if pgMain.ActiveTab = tabLanguageSelection then
   begin
-    btnBack.Visible := False;
     InitializeLanguageTab;
   end
   else if pgMain.ActiveTab = tabCodeEditor then
   begin
-    btnBack.Visible := True;
-    btnSave.Visible := True;
     InitializeCodeEditor;
-    btnKeyboard.Visible := True;
   end
   else if pgMain.ActiveTab = tabCompilerOutput then
   begin
     InitializeCompilerOutput;
   end;
 
+  if pgMain.ActiveTab = tabLanguageLibraries then
+  begin
+    tabLanguageLibraries.Visible := True;
+  end
+  else
+  begin
+    tabLanguageLibraries.Visible := False;
+  end;
 end;
 
 procedure TfrmCEAppMain.RegisterIntent;
@@ -712,11 +836,6 @@ begin
   begin
     Service.ShowVirtualKeyboard(edCodeEditor);
   end;
-end;
-
-procedure TfrmCEAppMain.btnTestSomethingClick(Sender: TObject);
-begin
-  LoadStateFromLink('https://godbolt.org/beta/z/-vvS05');
 end;
 
 procedure TfrmCEAppMain.InitializeLanguageTab;
@@ -818,7 +937,7 @@ begin
         for Version in Lib.Versions do
         begin
           lstLanguageLibraries.Items.AddObject(
-            Lib.Name + ' - ' + Version.Version,
+            ' ' + Lib.Name + ' - ' + Version.Version,
             Version
           );
         end;

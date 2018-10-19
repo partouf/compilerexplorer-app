@@ -22,7 +22,7 @@ inherited frmCEAppMain_LgXhdpiPh: TfrmCEAppMain_LgXhdpiPh
       Size.Width = 48.000000000000000000
       Size.Height = 48.000000000000000000
     end
-    inherited btnTestSomething: TSpeedButton
+    inherited btnLoadFromLink: TSpeedButton
       Size.Width = 48.000000000000000000
       Size.Height = 48.000000000000000000
     end
@@ -30,7 +30,10 @@ inherited frmCEAppMain_LgXhdpiPh: TfrmCEAppMain_LgXhdpiPh
   inherited pgMain: TTabControl
     Size.Width = 450.000000000000000000
     Size.Height = 599.000000000000000000
+    TabIndex = 0
     Sizes = (
+      384s
+      479s
       450s
       599s
       450s
@@ -39,9 +42,19 @@ inherited frmCEAppMain_LgXhdpiPh: TfrmCEAppMain_LgXhdpiPh
       599s
       450s
       599s)
-    inherited tabLanguageSelection: TTabItem
+    inherited tabClientState: TTabItem
+      IsSelected = True
       Size.Width = 8.000000000000000000
       Size.Height = 8.000000000000000000
+      ExplicitSize.cx = 8.000000000000000000
+      ExplicitSize.cy = 8.000000000000000000
+      inherited treeClientState: TTreeView
+        Viewport.Width = 384.000000000000000000
+        Viewport.Height = 479.000000000000000000
+      end
+    end
+    inherited tabLanguageSelection: TTabItem
+      IsSelected = False
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
       inherited lstLanguages: TListBox
@@ -50,13 +63,8 @@ inherited frmCEAppMain_LgXhdpiPh: TfrmCEAppMain_LgXhdpiPh
         Viewport.Width = 450.000000000000000000
         Viewport.Height = 599.000000000000000000
       end
-      inherited btnLoadFromLink: TSpeedButton
-        Size.Height = 48.000000000000000000
-      end
     end
     inherited tabCodeEditor: TTabItem
-      Size.Width = 8.000000000000000000
-      Size.Height = 8.000000000000000000
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
       inherited edCodeEditor: TMemo
@@ -67,8 +75,6 @@ inherited frmCEAppMain_LgXhdpiPh: TfrmCEAppMain_LgXhdpiPh
       end
     end
     inherited tabCompilerOutput: TTabItem
-      Size.Width = 8.000000000000000000
-      Size.Height = 8.000000000000000000
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
       inherited lstCompilerOutput: TMemo
@@ -87,8 +93,6 @@ inherited frmCEAppMain_LgXhdpiPh: TfrmCEAppMain_LgXhdpiPh
       end
     end
     inherited tabLanguageLibraries: TTabItem
-      Size.Width = 8.000000000000000000
-      Size.Height = 8.000000000000000000
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
       inherited lstLanguageLibraries: TListBox
@@ -128,9 +132,5 @@ inherited frmCEAppMain_LgXhdpiPh: TfrmCEAppMain_LgXhdpiPh
   end
   inherited aniBusy: TAniIndicator
     Enabled = True
-  end
-  inherited tmrBusy: TTimer [4]
-  end
-  inherited lstActions: TActionList [5]
   end
 end
