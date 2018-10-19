@@ -1,0 +1,9 @@
+{
+  "Packages": [
+    {
+      "Folder": "compilerexplorer-api",
+      "Repository": "https://github.com/partouf/compilerexplorer-api.git",
+      "Branch": "master"
+    }
+  ]
+}
