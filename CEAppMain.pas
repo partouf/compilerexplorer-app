@@ -174,7 +174,7 @@ procedure TfrmCEAppMain.acLoadFromLinkExecute(Sender: TObject);
 var
   DefaultUrl: string;
 begin
-  DefaultUrl := UrlCompilerExplorer + '/z/-vvS05';
+  DefaultUrl := '';
 
   TDialogService.InputQuery('Got a link?', [''], [DefaultUrl],
     procedure(const AResult: TModalResult; const AValues: array of string)
@@ -357,6 +357,8 @@ var
   CompilerItem: TTreeViewItem;
   Libsummary: string;
 begin
+  treeClientState.Clear;
+
   for Session in FCEAppState.LoadedState.Sessions do
   begin
     Language := FCEAppState.LoadedLanguages.GetById(Session.Language);
@@ -433,11 +435,26 @@ end;
 
 procedure TfrmCEAppMain.LoadStateFromLink(const Link: string);
 begin
-  FCEAppState.LoadClientState(Link,
-    procedure(State: TCEClientState)
+  TThread.Synchronize(nil,
+  procedure
+  begin
+    if not ContainsText(Link, 'godbolt.org/') then
     begin
-      LoadState(State);
-    end);
+      TDialogService.ShowMessage('This link cannot be loaded, go to godbolt.org to create a new shortlink');
+    end
+    else if ContainsText(Link, 'godbolt.org/') and not ContainsText(Link, '/z/') then
+    begin
+      TDialogService.ShowMessage('This old style link cannot be loaded, click Share again on the website to create a new style /z/ shortlink.');
+    end
+    else
+    begin
+      FCEAppState.LoadClientState(Link,
+        procedure(State: TCEClientState)
+        begin
+          LoadState(State);
+        end);
+    end;
+  end);
 end;
 
 procedure TfrmCEAppMain.lstLanguageLibrariesChangeCheck(Sender: TObject);
