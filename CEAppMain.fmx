@@ -10,11 +10,14 @@ object frmCEAppMain: TfrmCEAppMain
   FullScreen = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignerMasterStyle = 2
+  Touch.GestureManager = gestMgr
+  Touch.InteractiveGestures = [Zoom]
+  OnGesture = FormGesture
+  DesignerMasterStyle = 3
   object TopToolBar: TToolBar
     Anchors = []
     Size.Width = 384.000000000000000000
-    Size.Height = 44.000000000000000000
+    Size.Height = 48.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object btnBack: TSpeedButton
@@ -22,8 +25,8 @@ object frmCEAppMain: TfrmCEAppMain
       Align = MostLeft
       Enabled = True
       ImageIndex = -1
-      Size.Width = 44.000000000000000000
-      Size.Height = 44.000000000000000000
+      Size.Width = 48.000000000000000000
+      Size.Height = 48.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'arrowlefttoolbutton'
     end
@@ -32,9 +35,9 @@ object frmCEAppMain: TfrmCEAppMain
       Align = MostRight
       Enabled = True
       ImageIndex = -1
-      Position.X = 340.000000000000000000
-      Size.Width = 44.000000000000000000
-      Size.Height = 44.000000000000000000
+      Position.X = 336.000000000000000000
+      Size.Width = 48.000000000000000000
+      Size.Height = 48.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'arrowrighttoolbutton'
     end
@@ -43,8 +46,8 @@ object frmCEAppMain: TfrmCEAppMain
       Align = Client
       Enabled = True
       ImageIndex = -1
-      Size.Width = 208.000000000000000000
-      Size.Height = 44.000000000000000000
+      Size.Width = 192.000000000000000000
+      Size.Height = 48.000000000000000000
       Size.PlatformDefault = False
     end
     object btnSave: TSpeedButton
@@ -52,9 +55,9 @@ object frmCEAppMain: TfrmCEAppMain
       Align = Right
       Enabled = True
       ImageIndex = -1
-      Position.X = 296.000000000000000000
-      Size.Width = 44.000000000000000000
-      Size.Height = 44.000000000000000000
+      Position.X = 288.000000000000000000
+      Size.Width = 48.000000000000000000
+      Size.Height = 48.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'actiontoolbutton'
     end
@@ -63,9 +66,9 @@ object frmCEAppMain: TfrmCEAppMain
       Align = Left
       Enabled = True
       ImageIndex = -1
-      Position.X = 44.000000000000000000
-      Size.Width = 44.000000000000000000
-      Size.Height = 44.000000000000000000
+      Position.X = 48.000000000000000000
+      Size.Width = 48.000000000000000000
+      Size.Height = 48.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'organizetoolbutton'
     end
@@ -75,8 +78,8 @@ object frmCEAppMain: TfrmCEAppMain
       Enabled = True
       ImageIndex = -1
       Position.X = 252.000000000000000000
-      Size.Width = 44.000000000000000000
-      Size.Height = 44.000000000000000000
+      Size.Width = 48.000000000000000000
+      Size.Height = 48.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'playtoolbutton'
       Visible = False
@@ -86,10 +89,10 @@ object frmCEAppMain: TfrmCEAppMain
     Align = Client
     FullSize = True
     Size.Width = 384.000000000000000000
-    Size.Height = 479.000000000000000000
+    Size.Height = 471.000000000000000000
     Size.PlatformDefault = False
     TabHeight = 49.000000000000000000
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 1
     TabPosition = None
     OnChange = pgMainChange
@@ -97,20 +100,20 @@ object frmCEAppMain: TfrmCEAppMain
       384s
       479s
       384s
-      479s
+      471s
+      384s
+      471s
       384s
       479s
       384s
-      479s
-      384s
-      479s)
+      471s)
     object tabClientState: TTabItem
       CustomIcon = <
         item
         end>
       IsSelected = False
-      Size.Width = 11.000000000000000000
-      Size.Height = 11.000000000000000000
+      Size.Width = 8.000000000000000000
+      Size.Height = 8.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
@@ -133,9 +136,9 @@ object frmCEAppMain: TfrmCEAppMain
       CustomIcon = <
         item
         end>
-      IsSelected = True
-      Size.Width = 11.000000000000000000
-      Size.Height = 11.000000000000000000
+      IsSelected = False
+      Size.Width = 8.000000000000000000
+      Size.Height = 8.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
@@ -145,7 +148,7 @@ object frmCEAppMain: TfrmCEAppMain
       object lstLanguages: TListBox
         Align = Client
         Size.Width = 384.000000000000000000
-        Size.Height = 479.000000000000000000
+        Size.Height = 471.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         DisableFocusEffect = True
@@ -153,16 +156,16 @@ object frmCEAppMain: TfrmCEAppMain
         DefaultItemStyles.GroupHeaderStyle = ''
         DefaultItemStyles.GroupFooterStyle = ''
         Viewport.Width = 384.000000000000000000
-        Viewport.Height = 479.000000000000000000
+        Viewport.Height = 471.000000000000000000
       end
     end
     object tabCodeEditor: TTabItem
       CustomIcon = <
         item
         end>
-      IsSelected = False
-      Size.Width = 11.000000000000000000
-      Size.Height = 11.000000000000000000
+      IsSelected = True
+      Size.Width = 8.000000000000000000
+      Size.Height = 8.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
@@ -170,20 +173,21 @@ object frmCEAppMain: TfrmCEAppMain
       ExplicitSize.cx = 8.000000000000000000
       ExplicitSize.cy = 8.000000000000000000
       object edCodeEditor: TMemo
-        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        Touch.GestureManager = gestMgr
+        Touch.InteractiveGestures = []
         DataDetectorTypes = []
-        StyledSettings = [Size, Style, FontColor]
+        StyledSettings = [Style, FontColor]
         TextSettings.Font.Family = 'Courier New'
         OnChange = edCodeEditorChange
         Align = Client
         ControlType = Platform
         Size.Width = 384.000000000000000000
-        Size.Height = 479.000000000000000000
+        Size.Height = 471.000000000000000000
         Size.PlatformDefault = False
         StyleLookup = 'memostyle'
         TabOrder = 0
         Viewport.Width = 376.000000000000000000
-        Viewport.Height = 471.000000000000000000
+        Viewport.Height = 463.000000000000000000
       end
     end
     object tabLanguageLibraries: TTabItem
@@ -191,8 +195,8 @@ object frmCEAppMain: TfrmCEAppMain
         item
         end>
       IsSelected = False
-      Size.Width = 11.000000000000000000
-      Size.Height = 11.000000000000000000
+      Size.Width = 8.000000000000000000
+      Size.Height = 8.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
@@ -221,8 +225,8 @@ object frmCEAppMain: TfrmCEAppMain
         item
         end>
       IsSelected = False
-      Size.Width = 11.000000000000000000
-      Size.Height = 11.000000000000000000
+      Size.Width = 8.000000000000000000
+      Size.Height = 8.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
@@ -263,21 +267,21 @@ object frmCEAppMain: TfrmCEAppMain
         Align = Client
         ControlType = Platform
         Size.Width = 384.000000000000000000
-        Size.Height = 358.000000000000000000
+        Size.Height = 350.000000000000000000
         Size.PlatformDefault = False
         StyleLookup = 'memostyle'
         TabOrder = 1
         Viewport.Width = 376.000000000000000000
-        Viewport.Height = 350.000000000000000000
+        Viewport.Height = 342.000000000000000000
       end
     end
   end
   object BottomToolBar: TToolBar
     Align = Bottom
     Anchors = [akLeft]
-    Position.Y = 523.000000000000000000
+    Position.Y = 519.000000000000000000
     Size.Width = 384.000000000000000000
-    Size.Height = 44.000000000000000000
+    Size.Height = 48.000000000000000000
     Size.PlatformDefault = False
     StyleLookup = 'bottomtoolbar'
     TabOrder = 2
@@ -287,7 +291,7 @@ object frmCEAppMain: TfrmCEAppMain
       Margins.Right = 10.000000000000000000
       Position.X = 10.000000000000000000
       Size.Width = 25.000000000000000000
-      Size.Height = 44.000000000000000000
+      Size.Height = 48.000000000000000000
       Size.PlatformDefault = False
       OnClick = indicatorCompilationClick
     end
@@ -295,8 +299,8 @@ object frmCEAppMain: TfrmCEAppMain
       Align = Client
       Margins.Top = 10.000000000000000000
       Margins.Bottom = 10.000000000000000000
-      Size.Width = 207.000000000000000000
-      Size.Height = 30.000000000000000000
+      Size.Width = 195.000000000000000000
+      Size.Height = 32.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       OnChange = cbCompilerSelectionChange
@@ -306,17 +310,17 @@ object frmCEAppMain: TfrmCEAppMain
       Align = Right
       Enabled = True
       ImageIndex = -1
-      Position.X = 252.000000000000000000
-      Size.Width = 44.000000000000000000
-      Size.Height = 44.000000000000000000
+      Position.X = 240.000000000000000000
+      Size.Width = 48.000000000000000000
+      Size.Height = 48.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'infotoolbutton'
     end
     object btnKeyboard: TSpeedButton
       Align = MostRight
-      Position.X = 340.000000000000000000
-      Size.Width = 44.000000000000000000
-      Size.Height = 44.000000000000000000
+      Position.X = 336.000000000000000000
+      Size.Width = 48.000000000000000000
+      Size.Height = 48.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'composetoolbutton'
       OnClick = btnKeyboardClick
@@ -326,9 +330,9 @@ object frmCEAppMain: TfrmCEAppMain
       Align = Right
       Enabled = True
       ImageIndex = -1
-      Position.X = 296.000000000000000000
-      Size.Width = 44.000000000000000000
-      Size.Height = 44.000000000000000000
+      Position.X = 288.000000000000000000
+      Size.Width = 48.000000000000000000
+      Size.Height = 48.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'bookmarkstoolbutton'
     end
@@ -390,5 +394,10 @@ object frmCEAppMain: TfrmCEAppMain
       Category = 'Tab'
       OnExecute = acPlaySessionCompilerExecute
     end
+  end
+  object gestMgr: TGestureManager
+    Sensitivity = 80.000000000000000000
+    Left = 252
+    Top = 320
   end
 end

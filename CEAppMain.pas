@@ -16,7 +16,7 @@ uses
   {$endif}
   FMX.Platform, System.Messaging, CE.ClientState, System.Generics.Collections,
   FMX.TreeView,
-  CEAppState;
+  CEAppState, FMX.Gestures;
 
 type
   TfrmCEAppMain = class(TForm)
@@ -58,6 +58,7 @@ type
     treeClientState: TTreeView;
     btnPlaySessionCompiler: TSpeedButton;
     acPlaySessionCompiler: TAction;
+    gestMgr: TGestureManager;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
     procedure pgMainChange(Sender: TObject);
@@ -75,9 +76,13 @@ type
     procedure acLoadFromLinkExecute(Sender: TObject);
     procedure acPlaySessionCompilerExecute(Sender: TObject);
     procedure lstLanguageLibrariesChangeCheck(Sender: TObject);
+    procedure FormGesture(Sender: TObject; const EventInfo: TGestureEventInfo;
+      var Handled: Boolean);
   private
     { Private declarations }
     FCEAppState: TCEAppState;
+    FDefaultFontSize: Single;
+    FPreviousDistance: Integer;
 
     procedure RegisterIntent;
     procedure InitializeLanguageTab;
@@ -128,7 +133,7 @@ uses
   CE.Languages, CE.Compilers, CE.Compile,
   FMX.VirtualKeyboard, FMX.DialogService,
   System.IOUtils, System.DateUtils, System.StrUtils, CE.LinkInfo,
-  CE.LinkSaver, CE.Libraries;
+  CE.LinkSaver, CE.Libraries, System.Math;
 
 {$R *.fmx}
 {$R *.Windows.fmx MSWINDOWS}
@@ -555,12 +560,29 @@ begin
   edCodeEditor.Font.Family := 'monospace';
 {$ENDIF}
 
+  FDefaultFontSize := edCodeEditor.Font.Size;
+  FPreviousDistance := 0;
+
   RegisterIntent;
 end;
 
 procedure TfrmCEAppMain.FormDestroy(Sender: TObject);
 begin
   FCEAppState.Free;
+end;
+
+procedure TfrmCEAppMain.FormGesture(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
+begin
+  if EventInfo.GestureID = igiZoom then
+  begin
+    if (not(TInteractiveGestureFlag.gfBegin in EventInfo.Flags)) and
+       (not(TInteractiveGestureFlag.gfEnd in EventInfo.Flags)) then
+    begin
+      edCodeEditor.Font.Size := Max(FDefaultFontSize, Min(72, edCodeEditor.Font.Size + (EventInfo.Distance - FPreviousDistance)));
+    end;
+
+    FPreviousDistance := EventInfo.Distance;
+  end;
 end;
 
 procedure TfrmCEAppMain.FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
