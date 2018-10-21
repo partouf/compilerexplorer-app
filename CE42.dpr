@@ -1,4 +1,4 @@
-program CEApp;
+program CE42;
 
 uses
   System.StartUpCopy,
