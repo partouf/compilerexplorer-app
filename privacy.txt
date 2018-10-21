@@ -8,3 +8,5 @@ The policy can be read on the website https://godbolt.org/ or directly https://g
 Be aware that the app will make at least one request to the API when you run it.
 And most, if not all functionality is linked to the API.
 If you do not agree with the Compiler Explorer Privacy Policy, do not use this app.
+
+All API requests are sent over HTTPS directly to the Compiler Explorer API.
