@@ -184,7 +184,10 @@ begin
   TDialogService.InputQuery('Got a link?', [''], [DefaultUrl],
     procedure(const AResult: TModalResult; const AValues: array of string)
     begin
-      LoadStateFromLink(AValues[0]);
+      if AResult = mrOk then
+      begin
+        LoadStateFromLink(AValues[0]);
+      end;
     end);
 end;
 
