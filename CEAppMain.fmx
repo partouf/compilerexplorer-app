@@ -40,13 +40,14 @@ object frmCEAppMain: TfrmCEAppMain
       Size.Height = 48.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'arrowrighttoolbutton'
+      Visible = False
     end
     object lblCurrentTitle: TSpeedButton
       Action = acHeaderClick
       Align = Client
       Enabled = True
       ImageIndex = -1
-      Size.Width = 192.000000000000000000
+      Size.Width = 288.000000000000000000
       Size.Height = 48.000000000000000000
       Size.PlatformDefault = False
     end
@@ -55,7 +56,7 @@ object frmCEAppMain: TfrmCEAppMain
       Align = Right
       Enabled = True
       ImageIndex = -1
-      Position.X = 288.000000000000000000
+      Position.X = 336.000000000000000000
       Size.Width = 48.000000000000000000
       Size.Height = 48.000000000000000000
       Size.PlatformDefault = False
@@ -71,6 +72,7 @@ object frmCEAppMain: TfrmCEAppMain
       Size.Height = 48.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'organizetoolbutton'
+      Visible = False
     end
     object btnPlaySessionCompiler: TSpeedButton
       Action = acPlaySessionCompiler
@@ -155,6 +157,7 @@ object frmCEAppMain: TfrmCEAppMain
         DefaultItemStyles.ItemStyle = ''
         DefaultItemStyles.GroupHeaderStyle = ''
         DefaultItemStyles.GroupFooterStyle = ''
+        OnChange = lstLanguagesChange
         Viewport.Width = 384.000000000000000000
         Viewport.Height = 471.000000000000000000
       end
@@ -363,6 +366,7 @@ object frmCEAppMain: TfrmCEAppMain
     object acNextTab: TNextTabAction
       Category = 'Tab'
       TabControl = pgMain
+      Visible = False
     end
     object acCompile: TAction
       Category = 'Tab'
@@ -384,6 +388,7 @@ object frmCEAppMain: TfrmCEAppMain
     end
     object acLoadFromLink: TAction
       Category = 'Tab'
+      Visible = False
       OnExecute = acLoadFromLinkExecute
     end
     object acSelectLibraries: TAction

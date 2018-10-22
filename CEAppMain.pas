@@ -78,6 +78,7 @@ type
     procedure lstLanguageLibrariesChangeCheck(Sender: TObject);
     procedure FormGesture(Sender: TObject; const EventInfo: TGestureEventInfo;
       var Handled: Boolean);
+    procedure lstLanguagesChange(Sender: TObject);
   private
     { Private declarations }
     FCEAppState: TCEAppState;
@@ -321,6 +322,8 @@ begin
       end
       else
       begin
+        acLoadFromLink.Visible := True;
+
         if not Assigned(FCEAppState.SelectedLanguage) then
         begin
           DisableBusyIndicator;
@@ -468,6 +471,11 @@ end;
 procedure TfrmCEAppMain.lstLanguageLibrariesChangeCheck(Sender: TObject);
 begin
   FCEAppState.ClearCompileResult;
+end;
+
+procedure TfrmCEAppMain.lstLanguagesChange(Sender: TObject);
+begin
+  acNextTab.Visible := (lstLanguages.ItemIndex <> -1);
 end;
 
 function TfrmCEAppMain.GetSelectedLibraries: TList<TCELibraryVersion>;
@@ -693,15 +701,16 @@ begin
     lblCurrentTitle.Text := '';
 
   btnKeyboard.Visible := (pgMain.ActiveTab = tabCodeEditor);
-  btnSave.Visible := (pgMain.ActiveTab = tabCodeEditor);
+  acSave.Visible := (pgMain.ActiveTab = tabCodeEditor);
   BottomToolbar.Visible := (pgMain.ActiveTab = tabCodeEditor) or (pgMain.ActiveTab = tabCompilerOutput) or (pgMain.ActiveTab = tabLanguageLibraries);
-  btnBack.Visible := (pgMain.ActiveTab = tabCodeEditor) or (pgMain.ActiveTab = tabCompilerOutput) or (pgMain.ActiveTab = tabLanguageLibraries);
-  btnNext.Visible := (pgMain.ActiveTab <> tabClientState);
+  acPreviousTab.Visible := (pgMain.ActiveTab = tabCodeEditor) or (pgMain.ActiveTab = tabCompilerOutput) or (pgMain.ActiveTab = tabLanguageLibraries);
+  acNextTab.Visible := (pgMain.ActiveTab <> tabClientState);
   btnPlaySessionCompiler.Visible := (pgMain.ActiveTab = tabClientState);
 
   if pgMain.ActiveTab = tabLanguageSelection then
   begin
     InitializeLanguageTab;
+    acNextTab.Visible := (lstLanguages.ItemIndex <> -1);
   end
   else if pgMain.ActiveTab = tabCodeEditor then
   begin
