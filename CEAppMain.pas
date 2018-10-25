@@ -583,13 +583,19 @@ begin
 end;
 
 procedure TfrmCEAppMain.FormGesture(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
+var
+  NewFontSize: Single;
 begin
   if EventInfo.GestureID = igiZoom then
   begin
     if (not(TInteractiveGestureFlag.gfBegin in EventInfo.Flags)) and
        (not(TInteractiveGestureFlag.gfEnd in EventInfo.Flags)) then
     begin
-      edCodeEditor.Font.Size := Max(FDefaultFontSize, Min(72, edCodeEditor.Font.Size + (EventInfo.Distance - FPreviousDistance)));
+      NewFontSize := Max(FDefaultFontSize, Min(72, edCodeEditor.Font.Size + (EventInfo.Distance - FPreviousDistance)));
+      if (Trunc(NewFontSize) mod 2) = 0 then
+        edCodeEditor.Font.Size := NewFontSize
+      else
+        edCodeEditor.Font.Size := NewFontSize + 1;
     end;
 
     FPreviousDistance := EventInfo.Distance;
