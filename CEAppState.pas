@@ -38,6 +38,7 @@ type
 
     procedure CallSynchronized<T>(Proc: TProc<T>; Param: T);
     procedure CallSynchronizedNoParam(Proc: TProc);
+    procedure SetOnRestError(const Value: TProc<string>);
   public
     property LoadedLanguages: TCELanguages read FLoadedLanguages;
     property LoadedCompilers: TCECompilers read FLoadedCompilers;
@@ -59,6 +60,7 @@ type
     property OnLibrariesLoaded: TProc read FOnLibrariesLoaded write FOnLibrariesLoaded;
 
     property OnCompileResultChange: TProc read FOnCompileResultChange write FOnCompileResultChange;
+    property OnRestError: TProc<string> write SetOnRestError;
 
     constructor Create;
     destructor Destroy; override;
@@ -256,6 +258,15 @@ begin
   FCurrentCompilerArguments := Value;
 
   ClearCompileResult;
+end;
+
+procedure TCEAppState.SetOnRestError(const Value: TProc<string>);
+begin
+  FCELanguages.SetErrorCallback(Value);
+  FCECompilers.SetErrorCallback(Value);
+  FCECompile.SetErrorCallback(Value);
+  FCELibraries.SetErrorCallback(Value);
+  FCELinkInfo.SetErrorCallback(Value);
 end;
 
 end.

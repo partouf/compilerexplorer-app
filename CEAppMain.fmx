@@ -157,6 +157,8 @@ object frmCEAppMain: TfrmCEAppMain
         DefaultItemStyles.ItemStyle = ''
         DefaultItemStyles.GroupHeaderStyle = ''
         DefaultItemStyles.GroupFooterStyle = ''
+        ParentShowHint = False
+        ShowHint = False
         OnChange = lstLanguagesChange
         Viewport.Width = 384.000000000000000000
         Viewport.Height = 471.000000000000000000
@@ -354,6 +356,13 @@ object frmCEAppMain: TfrmCEAppMain
     OnTimer = tmrBusyTimer
     Left = 296
     Top = 228
+  end
+  object tmrStartup: TTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = tmrStartupTimer
+    Left = 116
+    Top = 200
   end
   object lstActions: TActionList
     Left = 248

@@ -59,6 +59,7 @@ type
     btnPlaySessionCompiler: TSpeedButton;
     acPlaySessionCompiler: TAction;
     gestMgr: TGestureManager;
+    tmrStartup: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
     procedure pgMainChange(Sender: TObject);
@@ -79,6 +80,7 @@ type
     procedure FormGesture(Sender: TObject; const EventInfo: TGestureEventInfo;
       var Handled: Boolean);
     procedure lstLanguagesChange(Sender: TObject);
+    procedure tmrStartupTimer(Sender: TObject);
   private
     { Private declarations }
     FCEAppState: TCEAppState;
@@ -118,6 +120,7 @@ type
     procedure ShowPossibleSessions;
     procedure LoadSessionAndCompiler(const Session: TCEClientStateSession;
       const Compiler: TCEClientStateCompiler);
+    procedure OnRestError(const Errormessage: string);
   public
     { Public declarations }
   end;
@@ -135,6 +138,20 @@ uses
   FMX.VirtualKeyboard, FMX.DialogService,
   System.IOUtils, System.DateUtils, System.StrUtils, CE.LinkInfo,
   CE.LinkSaver, CE.Libraries, System.Math;
+
+resourcestring
+  StrCannotLoadLink = 'This link cannot be loaded, go to godbolt.org to ' +
+    'create a new shortlink';
+  StrOldLink = 'This old style link cannot be loaded, click Share again on ' +
+    'the website to create a new style /z/ shortlink.';
+  StrCopiedToClipboard = 'Link copied to clipboard';
+  StrCompilerArguments = 'Compiler arguments';
+  StrGotALink = 'Got a link?';
+  StrErrorPrefix = 'An error has occured, ' +
+    ' please check your Internet connection - ';
+
+const
+  c_linkurlpart = 'godbolt.org/';
 
 {$R *.fmx}
 {$R *.Windows.fmx MSWINDOWS}
@@ -180,9 +197,9 @@ procedure TfrmCEAppMain.acLoadFromLinkExecute(Sender: TObject);
 var
   DefaultUrl: string;
 begin
-  DefaultUrl := '';
+  DefaultUrl := String.Empty;
 
-  TDialogService.InputQuery('Got a link?', [''], [DefaultUrl],
+  TDialogService.InputQuery(StrGotALink, [String.Empty], [DefaultUrl],
     procedure(const AResult: TModalResult; const AValues: array of string)
     begin
       if AResult = mrOk then
@@ -343,6 +360,13 @@ begin
     end);
 end;
 
+procedure TfrmCEAppMain.tmrStartupTimer(Sender: TObject);
+begin
+  tmrStartup.Enabled := False;
+
+  InitializeLanguageTab;
+end;
+
 procedure TfrmCEAppMain.SelectCompiler(const Id: string);
 var
   Compiler: TCECompiler;
@@ -385,9 +409,9 @@ begin
         CompilerItem := TTreeViewItem.Create(treeClientState);
         Libsummary := SessionCompiler.GetShortLibrarySummary;
 
-        if SessionCompiler.Arguments <> '' then
+        if SessionCompiler.Arguments <> String.Empty then
           CompilerItem.Text := SessionCompiler.Id + ' /' + SessionCompiler.Arguments + '/'
-        else if Libsummary <> '' then
+        else if Libsummary <> String.Empty then
           CompilerItem.Text := SessionCompiler.Id + ' [' + Libsummary + ']'
         else
           CompilerItem.Text := SessionCompiler.Id;
@@ -449,13 +473,13 @@ begin
   TThread.Synchronize(nil,
   procedure
   begin
-    if not ContainsText(Link, 'godbolt.org/') then
+    if not ContainsText(Link, c_linkurlpart) then
     begin
-      TDialogService.ShowMessage('This link cannot be loaded, go to godbolt.org to create a new shortlink');
+      TDialogService.ShowMessage(StrCannotLoadLink);
     end
-    else if ContainsText(Link, 'godbolt.org/') and not ContainsText(Link, '/z/') then
+    else if ContainsText(Link, c_linkurlpart) and not ContainsText(Link, '/z/') then
     begin
-      TDialogService.ShowMessage('This old style link cannot be loaded, click Share again on the website to create a new style /z/ shortlink.');
+      TDialogService.ShowMessage(StrOldLink);
     end
     else
     begin
@@ -476,6 +500,17 @@ end;
 procedure TfrmCEAppMain.lstLanguagesChange(Sender: TObject);
 begin
   acNextTab.Visible := (lstLanguages.ItemIndex <> -1);
+end;
+
+procedure TfrmCEAppMain.OnRestError(const Errormessage: string);
+begin
+  TDialogService.MessageDialog(
+    StrErrorPrefix + ErrorMessage,
+    TMsgDlgType.mtError,
+    [TMsgDlgBtn.mbOK],
+    TMsgDlgBtn.mbOK,
+    0,
+    nil);
 end;
 
 function TfrmCEAppMain.GetSelectedLibraries: TList<TCELibraryVersion>;
@@ -512,7 +547,7 @@ begin
       begin
         Svc.SetClipboard(Link);
 
-        TDialogService.ShowMessage('Link copied to clipboard');
+        TDialogService.ShowMessage(StrCopiedToClipboard);
       end;
     end);
 end;
@@ -524,7 +559,7 @@ end;
 
 procedure TfrmCEAppMain.acToggleCompilerArgumentsExecute(Sender: TObject);
 begin
-  TDialogService.InputQuery('Compiler arguments', [''], [FCEAppState.CurrentCompilerArguments],
+  TDialogService.InputQuery(StrCompilerArguments, [String.Empty], [FCEAppState.CurrentCompilerArguments],
     procedure(const AResult: TModalResult; const AValues: array of string)
     begin
       if FCEAppState.CurrentCompilerArguments <> AValues[0] then
@@ -562,6 +597,16 @@ begin
     procedure
     begin
       HandleCompileResult;
+    end;
+
+  FCEAppState.OnRestError :=
+    procedure(Errormessage: string)
+    begin
+      TThread.Synchronize(nil,
+        procedure
+        begin
+          Self.OnRestError(Errormessage);
+        end);
     end;
 
   pgMain.First(TTabTransition.None);
@@ -669,7 +714,7 @@ begin
       cbCompilerSelection.Items.AddObject(Compiler.Description, Compiler);
     end;
 
-    if FCEAppState.SelectedLanguage.DefaultCompilerId = '' then
+    if FCEAppState.SelectedLanguage.DefaultCompilerId = String.Empty then
     begin
       cbCompilerSelection.ItemIndex :=
         cbCompilerSelection.Items.IndexOfObject(FCEAppState.LoadedCompilers.First);
@@ -704,7 +749,7 @@ begin
   if pgMain.ActiveTab <> nil then
     lblCurrentTitle.Text := pgMain.ActiveTab.Text
   else
-    lblCurrentTitle.Text := '';
+    lblCurrentTitle.Text := String.Empty;
 
   btnKeyboard.Visible := (pgMain.ActiveTab = tabCodeEditor);
   acSave.Visible := (pgMain.ActiveTab = tabCodeEditor);
@@ -715,7 +760,7 @@ begin
 
   if pgMain.ActiveTab = tabLanguageSelection then
   begin
-    InitializeLanguageTab;
+    tmrStartup.Enabled := True;
     acNextTab.Visible := (lstLanguages.ItemIndex <> -1);
   end
   else if pgMain.ActiveTab = tabCodeEditor then
@@ -741,16 +786,37 @@ procedure TfrmCEAppMain.RegisterIntent;
 var
   AppEventService: IFMXApplicationEventService;
 begin
-  if TPlatformServices.Current.SupportsPlatformService(IFMXApplicationEventService, AppEventService) then
-    AppEventService.SetApplicationEventHandler(HandleAppEvent);
+  try
+    if TPlatformServices.Current.SupportsPlatformService(IFMXApplicationEventService, AppEventService) then
+      AppEventService.SetApplicationEventHandler(HandleAppEvent);
+  except
+    on E: Exception do
+    begin
+      Log.d('SetApplicationEventHandler: ' + E.Message);
+    end;
+  end;
 
-  {$ifdef ANDROID}
-  MainActivity.registerIntentAction(TJIntent.JavaClass.ACTION_VIEW);
-  {$endif}
+  try
+    {$ifdef ANDROID}
+    MainActivity.registerIntentAction(TJIntent.JavaClass.ACTION_VIEW);
+    {$endif}
+  except
+    on E: Exception do
+    begin
+      Log.d('registerIntentAction: ' + E.Message);
+    end;
+  end;
 
-  {$ifdef ANDROID or IOS}
-  TMessageManager.DefaultManager.SubscribeToMessage(TMessageReceivedNotification, HandleActivityMessage);
-  {$endif}
+  try
+    {$ifdef ANDROID or IOS}
+    TMessageManager.DefaultManager.SubscribeToMessage(TMessageReceivedNotification, HandleActivityMessage);
+    {$endif}
+  except
+    on E: Exception do
+    begin
+      Log.d('SubscribeToMessage: ' + E.Message);
+    end;
+  end;
 end;
 
 procedure TfrmCEAppMain.HandleActivityMessage(const Sender: TObject; const M: TMessage);
@@ -854,7 +920,7 @@ begin
     NewLanguage := (lstLanguages.Selected.Data as TCELanguage);
     if FCEAppState.SelectedLanguage <> NewLanguage then
     begin
-      edCodeEditor.Text := '';
+      edCodeEditor.Text := String.Empty;
       FCEAppState.SelectedLanguage := NewLanguage;
       cbCompilerSelection.Visible := False;
 
@@ -886,7 +952,7 @@ begin
     end;
   end;
 
-  if Assigned(FCEAppState.SelectedLanguage) and (edCodeEditor.Text = '') then
+  if Assigned(FCEAppState.SelectedLanguage) and (edCodeEditor.Text = String.Empty) then
   begin
     edCodeEditor.Text := FCEAppState.SelectedLanguage.ExampleCode;
   end;
