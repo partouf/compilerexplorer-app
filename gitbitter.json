@@ -4,6 +4,11 @@
       "Folder": "compilerexplorer-api",
       "Repository": "https://github.com/partouf/compilerexplorer-api.git",
       "Branch": "master"
+    },
+    {
+      "Folder": "underscore4d",
+      "Repository": "https://github.com/gdksoftware/underscore4d.git",
+      "Branch": "master"
     }
   ]
 }

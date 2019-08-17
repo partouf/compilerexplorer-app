@@ -14,7 +14,8 @@ uses
   CE.ClientState in '..\compilerexplorer-api\CE\CE.ClientState.pas',
   CE.LinkSaver in '..\compilerexplorer-api\CE\CE.LinkSaver.pas',
   CE.Libraries in '..\compilerexplorer-api\CE\CE.Libraries.pas',
-  CEAppState in 'CEAppState.pas';
+  CEAppState in 'CEAppState.pas',
+  Underscore.Delphi.Springless in '..\underscore4d\Underscore.Delphi.Springless.pas';
 
 {$R *.res}
 
