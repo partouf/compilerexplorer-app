@@ -85,7 +85,7 @@ implementation
 
 uses
   System.Classes, CE.LinkSaver, CE.Languages, CE.Compilers, CE.Libraries,
-  CE.Compile, CE.LinkInfo;
+  CE.Compile, CE.LinkInfo, System.StrUtils;
 
 { TLocalData }
 
@@ -248,7 +248,10 @@ begin
     FSelectedLibraries,
     procedure(LinkId: string)
     begin
-      CallSynchronized<string>(Callback, UrlCompilerExplorer + '/z/' + LinkId);
+      if StartsText('https://', LinkId) or StartsText('http://', LinkId) then
+        CallSynchronized<string>(Callback, LinkId)
+      else
+        CallSynchronized<string>(Callback, UrlCompilerExplorer + '/z/' + LinkId);
     end
   );
 end;
